@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "-FLOSLATE-",
   "private": true,
   "scripts": {
     "build": "turbo run build",
