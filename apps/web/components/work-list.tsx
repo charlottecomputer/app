@@ -18,10 +18,10 @@ export function WorkList({ projects, activeIndex }: WorkListProps) {
     const project = projects[activeIndex]
 
     return (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 mix-blend-difference text-white">
-            <div className="w-full max-w-4xl px-8 bg-pink-200 flex justify-between items-end">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20  ">
+            <div className="w-full max-w-6xl px-8   flex justify-between items-end">
                 <div className="flex flex-col gap-2">
-                    <div className="h-24 md:h-32 relative overflow-hidden">
+                    <div className="h-24 md:h-32 relative ">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={project.id}
@@ -31,14 +31,14 @@ export function WorkList({ projects, activeIndex }: WorkListProps) {
                                 transition={{ duration: 0.2 }}
                             // className="absolute inset-0 flex items-center"
                             >
-                                <h2 className="font-serif text-black text-6xl md:text-8xl leading-none whitespace-nowrap">
+                                <h2 className="font-serif !text-black text-6xl md:text-8xl leading-none whitespace-nowrap">
                                     {project.title}
                                 </h2 >
                             </motion.div>
                         </AnimatePresence>
                     </div>
 
-                    <div className="h-6 relative bg-blue-200">
+                    <div className="h-6 relative ">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={project.id}

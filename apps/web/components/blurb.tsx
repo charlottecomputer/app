@@ -46,9 +46,9 @@ export function Blurb() {
     const containerRef = useRef<HTMLDivElement>(null)
     const stickyRef = useRef<HTMLDivElement>(null)
 
-    const text = `is reinventing mobile apps. We craft and curate `
-    const text2 = ` with an emphasis on excellent, elegant, and ethical design. For users lost in a sea of dark patterns, we aspire to be a beacon of light. `
-    const text3 = ` to build different.`
+    const text = `Your daily life revolves around `
+    const text2 = `Get a suite`
+    const text3 = ` and your hectic life.`
 
     // Calculate total characters for scroll range
     const totalChars = text.length + text2.length + text3.length
@@ -126,14 +126,7 @@ export function Blurb() {
                         <h4>
                             <div className="storyblok-content body">
                                 <p>
-                                    <span className="home-blurb-item" style={{ opacity: 1, display: 'inline-block' }}>
-                                        <span className="home-blurb-item__content">
-                                            <span className="home-blurb-item__content--text">
-                                                <span>charlotte.computer</span>
-                                            </span>
-                                        </span>
-                                    </span>
-                                    {" "}
+
                                     {words1.map((word, i) => {
                                         const startIdx = charCounter
                                         charCounter += word.length
@@ -155,7 +148,7 @@ export function Blurb() {
                                     <span className="home-blurb-item" style={{ opacity: 1, display: 'inline-block', justifyContent: 'center', alignItems: 'center' }}>
                                         <span className="home-blurb-item__content">
                                             <span className="home-blurb-item__content--text">
-                                                <span>brands</span>
+                                                <span>apps</span>
                                             </span>
                                         </span>
                                     </span>
@@ -181,7 +174,7 @@ export function Blurb() {
                                     <span className="home-blurb-item" style={{ opacity: 1, display: 'inline-block' }}>
                                         <span className="home-blurb-item__content">
                                             <span className="home-blurb-item__content--text">
-                                                <span>Join us</span>
+                                                <span>that actually fit you</span>
                                             </span>
                                         </span>
                                     </span>
@@ -204,6 +197,14 @@ export function Blurb() {
                                         charCounter += 1 // space
                                         return element
                                     })}
+                                    <span className="home-blurb-item" style={{ opacity: 1, display: 'inline-block' }}>
+                                        <span className="home-blurb-item__content">
+                                            <span className="home-blurb-item__content--text">
+                                                <span>no tutorial needed.</span>
+                                            </span>
+                                        </span>
+                                    </span>
+                                    {" "}
                                 </p>
                             </div>
                         </h4>

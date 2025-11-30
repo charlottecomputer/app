@@ -4,14 +4,29 @@ import { cn } from "../../../packages/@aliveui/lib/utils"
 import { motion, useScroll, useTransform, useSpring, MotionValue } from "motion/react"
 import { useEffect, useState } from "react"
 
-interface WorkClockProps {
-    scrollYProgress: MotionValue<number>
-    totalProjects: number
-    colorClass?: string
-    rotations?: number
+import { LucideIcon } from "lucide-react"
+
+interface Project {
+    id: string
+    title: string
+    category: string
+    year: string
+    image: string
+    bg: string
+    icon: LucideIcon
+    time: number
 }
 
-export function WorkClock({ scrollYProgress, totalProjects, colorClass, rotations = 1 }: WorkClockProps) {
+interface WorkClockProps {
+    scrollYProgress: MotionValue<number>
+    projects: Project[]
+    activeIndex: number
+    colorClass?: string
+    rotations?: number
+    useScrollTime?: boolean
+}
+
+export function WorkClock({ scrollYProgress, projects, activeIndex, colorClass, rotations = 1, useScrollTime = false }: WorkClockProps) {
     const [time, setTime] = useState<Date | null>(null)
     const [initialMinutes, setInitialMinutes] = useState(0)
 
@@ -24,13 +39,24 @@ export function WorkClock({ scrollYProgress, totalProjects, colorClass, rotation
         return () => clearInterval(timer)
     }, [])
 
-    // Hour hand: Real time
-    const hourRotation = time ? (time.getHours() % 12) * 30 + time.getMinutes() * 0.5 : 0
+    // Hour hand: Real time OR Scroll controlled
+    const realTimeHourRotation = time ? (time.getHours() % 12) * 30 + time.getMinutes() * 0.5 : 0
+    // Scroll controlled: 7:00 AM (210deg) to 10:00 PM (22:00 = 660deg)
+    // 15 hours range = 450 degrees
+    const scrollHourRotation = useTransform(scrollYProgress, [0, 1], [210, 660])
+    const smoothScrollHourRotation = useSpring(scrollHourRotation, { damping: 50, stiffness: 400 })
 
-    // Minute hand: Scroll controlled
-    const startRotation = initialMinutes * 6
-    const endRotation = startRotation + (360 * rotations)
-    const rotate = useTransform(scrollYProgress, [0, 1], [startRotation, endRotation])
+    const hourRotation = useScrollTime ? smoothScrollHourRotation : realTimeHourRotation
+
+    // Minute hand: Scroll controlled (if not using scroll time for hour) OR Real time?
+    // If hour is scroll controlled, minute hand should probably just spin fast to show time passing?
+    // 15 hours = 15 * 360 = 5400 degrees for minute hand
+    const startMinuteRotation = initialMinutes * 6
+    const endMinuteRotation = startMinuteRotation + (360 * rotations)
+    // If useScrollTime, let minute hand spin 15 times
+    const scrollMinuteRotation = useTransform(scrollYProgress, [0, 1], [0, 360 * 15])
+
+    const rotate = useScrollTime ? scrollMinuteRotation : useTransform(scrollYProgress, [0, 1], [startMinuteRotation, endMinuteRotation])
     const smoothRotate = useSpring(rotate, { damping: 50, stiffness: 400 })
 
     // Second hand: Real time
@@ -83,7 +109,7 @@ export function WorkClock({ scrollYProgress, totalProjects, colorClass, rotation
                                     const left = 175 + Math.sin(angle) * radius - 15;
                                     const top = 175 - Math.cos(angle) * radius - 10;
                                     return (
-                                        <div key={i} className="clock-number absolute text-[16px] font-medium text-[var(--hour-number-color)] text-center w-[30px] h-[20px] leading-[20px] shadow-[0_1px_1px_rgba(255,255,255,0.5)] z-[15] opacity-[var(--hour-number-opacity)] select-none pointer-events-none" style={{ left: `${left}px`, top: `${top}px` }}>
+                                        <div key={i} className="clock-number absolute text-[16px] font-medium text-[var(--hour-number-color)] text-center w-[30px] h-[20px] leading-[20px]  z-[15] opacity-[var(--hour-number-opacity)] select-none pointer-events-none" style={{ left: `${left}px`, top: `${top}px` }}>
                                             {hourIndex}
                                         </div>
                                     )
@@ -95,9 +121,50 @@ export function WorkClock({ scrollYProgress, totalProjects, colorClass, rotation
                             })}
                         </div>
 
+                        {/* App Indicators */}
+                        <div className="clock-app-indicators absolute top-0 left-0 w-full h-full z-[14]">
+                            {projects.map((project, index) => {
+                                // Calculate angle based on time (12-hour clock)
+                                // 12:00 = 0 degrees, 3:00 = 90 degrees, etc.
+                                // Each hour is 30 degrees.
+                                const hour = project.time % 12;
+                                const angle = hour * 30; // 0-360 degrees
+
+                                // Position the icon slightly inside the numbers
+                                const radius = 110;
+                                const radian = (angle * Math.PI) / 180;
+                                const left = 175 + Math.sin(radian) * radius - 12; // Center 24px icon
+                                const top = 175 - Math.cos(radian) * radius - 12;
+
+                                const isActive = index === activeIndex;
+
+                                return (
+                                    <div
+                                        key={project.id}
+                                        className="absolute w-[24px] h-[24px] flex items-center justify-center z-[16] transition-all duration-300"
+                                        style={{
+                                            left: `${left}px`,
+                                            top: `${top}px`,
+                                            transform: isActive ? 'scale(1.5)' : 'scale(1)',
+                                            opacity: isActive ? 1 : 0.6
+                                        }}
+                                    >
+                                        <project.icon
+                                            size={16}
+                                            className={cn(
+                                                "transition-colors duration-300",
+                                                isActive ? "text-black" : "text-[rgba(50,50,50,0.8)]"
+                                            )}
+                                            strokeWidth={isActive ? 3 : 2.5}
+                                        />
+                                    </div>
+                                )
+                            })}
+                        </div>
+
                         {/* Hands */}
                         {/* Hour Hand */}
-                        <div className="hour-hand clock-hand absolute w-[6px] h-[70px] bg-[var(--hand-color)] -ml-[3px] rounded-[3px] shadow-[0_0_5px_rgba(0,0,0,0.3)] origin-[center_bottom] bottom-[175px] left-[175px] z-[15] will-change-transform" style={{ transform: `rotate(${hourRotation}deg)` }} />
+                        <motion.div className="hour-hand clock-hand absolute w-[6px] h-[70px] bg-[var(--hand-color)] -ml-[3px] rounded-[3px] shadow-[0_0_5px_rgba(0,0,0,0.3)] origin-[center_bottom] bottom-[175px] left-[175px] z-[15] will-change-transform" style={{ rotate: hourRotation }} />
 
                         {/* Minute Hand (Scroll Controlled) */}
                         <motion.div className="minute-hand clock-hand absolute w-[4px] h-[100px] bg-[var(--hand-color)] -ml-[2px] rounded-[2px] shadow-[0_0_5px_rgba(0,0,0,0.3)] origin-[center_bottom] bottom-[175px] left-[175px] z-[15] will-change-transform" style={{ rotate: smoothRotate }} />
@@ -118,19 +185,19 @@ export function WorkClock({ scrollYProgress, totalProjects, colorClass, rotation
                         <div className="clock-center-dot absolute w-[12px] h-[12px] bg-[var(--second-hand-color)] rounded-full top-[169px] left-[169px] z-[17] shadow-[0_0_8px_rgba(255,107,0,0.4)]" />
                         <div className="clock-center-blur absolute w-[36px] h-[36px] top-[157px] left-[157px] bg-[rgba(255,255,255,0.35)] rounded-full backdrop-blur-[4px] z-[16] pointer-events-none shadow-[0_0_20px_rgba(255,255,255,0.4),inset_0_0_8px_rgba(255,255,255,0.6)]" />
 
-                        {/* Logo */}
+                        {/* Logo
                         <div className="clock-logo absolute w-full h-[20px] top-[110px] left-[135px] z-[15] opacity-90">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/1/16/Braun_Logo.svg" alt="Braun Logo" width="80" height="30" className="opacity-80" style={{ imageRendering: "pixelated" }} />
-                        </div>
+                        </div> */}
 
                         {/* Date */}
-                        <div className="clock-date absolute text-[12px] font-normal text-[rgba(50,50,50,0.8)] text-center w-[140px] h-auto leading-none bottom-[115px] left-[105px] shadow-[0_1px_1px_rgba(255,255,255,0.3)] z-[15] select-none pointer-events-none">
+                        <div className="clock-date absolute text-[12px] font-normal text-[rgba(50,50,50,0.8)] text-center w-[140px] h-auto leading-none bottom-[115px] left-[105px] z-[15] select-none pointer-events-none">
                             {time && `${time.toLocaleString('default', { month: 'short' })} ${time.getDate()}`}
                         </div>
 
                         {/* Timezone */}
-                        <div className="clock-timezone absolute text-[12px] font-normal text-[rgba(50,50,50,0.8)] text-center w-[140px] h-auto leading-none bottom-[100px] left-[105px] shadow-[0_1px_1px_rgba(255,255,255,0.3)] z-[15] select-none pointer-events-none">
-                            Berlin
+                        <div className="clock-timezone absolute text-[12px] font-normal text-[rgba(50,50,50,0.8)] text-center w-[140px] h-auto leading-none bottom-[100px] left-[105px] z-[15] select-none pointer-events-none">
+                            GMT
                         </div>
 
                         {/* Enhanced Border Effect (After pseudo-element equivalent) */}

@@ -6,19 +6,30 @@ import { Navigation } from "@aliveui"
 import { WorkClock } from "../../components/work-clock"
 import { WorkList } from "../../components/work-list"
 
-const projects = [
-    { id: "1", title: "Calendar", category: "Productivity", year: "Check your schedule for today", image: "/static/media/ab/0.jpg", bg: "#E0E0E0" },
-    { id: "2", title: "Todo", category: "Productivity", year: "Create a list of tasks for today", image: "/static/media/ab/0.jpg", bg: "#D8D8D8" },
-    { id: "3", title: "Projects", category: "Safer Everyday", year: "2024", image: "/static/media/ab/0.jpg", bg: "#F0F0F0" },
-    { id: "4", title: "Documents", category: "Carlos Alcaraz", year: "2023", image: "/static/media/ab/0.jpg", bg: "#E5E5E5" },
-    { id: "5", title: "Journal", category: "GHO", year: "2022", image: "/static/media/ab/0.jpg", bg: "#CCCCCC" },
-    { id: "6", title: "Augen Pro", category: "AI Wearables", year: "2024", image: "/static/media/ab/0.jpg", bg: "#D4D4D4" },
-    { id: "7", title: "Kriss.ai", category: "AI Sales Tool", year: "2024", image: "/static/media/ab/0.jpg", bg: "#DDDDDD" },
-    { id: "8", title: "Recipe App", category: "Ovechkin800", year: "2022", image: "/static/media/ab/0.jpg", bg: "#EEEEEE" },
-    { id: "9", title: "Aave", category: "Dumpling.FM", year: "2022", image: "/static/media/ab/0.jpg", bg: "#E8E8E8" },
-    { id: "10", title: "Madklubben", category: "Restaurant Portal", year: "2022", image: "/static/media/ab/0.jpg", bg: "#F5F5F5" },
-    { id: "11", title: "Aave", category: "Dumpling.TV", year: "2022", image: "/static/media/ab/0.jpg", bg: "#DFDFDF" },
-    { id: "12", title: "Journal", category: "The Ever Grid", year: "2022", image: "/static/media/ab/0.jpg", bg: "#D0D0D0" },
+import { Calendar, Coffee, ListTodo, KanbanSquare, CheckSquare, Map, FileText, Dumbbell, Utensils, BookOpen, LucideIcon } from "lucide-react"
+
+interface Project {
+    id: string
+    title: string
+    category: string
+    year: string
+    image: string
+    bg: string
+    icon: LucideIcon
+    time: number // Hour of the day (0-23)
+}
+
+const projects: Project[] = [
+    { id: "1", title: "Calendar", category: "Wake Up", year: "7:00 AM", image: "/static/media/ab/0.jpg", bg: "#E0E0E0", icon: Calendar, time: 7 },
+    { id: "2", title: "Coffee", category: "Morning Brew", year: "8:00 AM", image: "/static/media/ab/0.jpg", bg: "#D8D8D8", icon: Coffee, time: 8 },
+    { id: "3", title: "Todo", category: "Daily Plan", year: "9:00 AM", image: "/static/media/ab/0.jpg", bg: "#F0F0F0", icon: ListTodo, time: 9 },
+    { id: "4", title: "Planner", category: "New Project", year: "10:00 AM", image: "/static/media/ab/0.jpg", bg: "#E5E5E5", icon: KanbanSquare, time: 10 },
+    { id: "5", title: "Todo", category: "Check-in", year: "12:00 PM", image: "/static/media/ab/0.jpg", bg: "#CCCCCC", icon: CheckSquare, time: 12 },
+    { id: "6", title: "Roadmap", category: "Progress", year: "2:00 PM", image: "/static/media/ab/0.jpg", bg: "#D4D4D4", icon: Map, time: 14 },
+    { id: "7", title: "Notion", category: "Documentation", year: "4:00 PM", image: "/static/media/ab/0.jpg", bg: "#DDDDDD", icon: FileText, time: 16 },
+    { id: "8", title: "Gym", category: "Workout", year: "6:00 PM", image: "/static/media/ab/0.jpg", bg: "#EEEEEE", icon: Dumbbell, time: 18 },
+    { id: "9", title: "Recipe", category: "Dinner", year: "7:00 PM", image: "/static/media/ab/0.jpg", bg: "#E8E8E8", icon: Utensils, time: 19 },
+    { id: "10", title: "Journal", category: "Reflect", year: "10:00 PM", image: "/static/media/ab/0.jpg", bg: "#F5F5F5", icon: BookOpen, time: 22 },
 ]
 
 export default function WorkPage() {
@@ -32,21 +43,27 @@ export default function WorkPage() {
     const [activeIndex, setActiveIndex] = useState(0)
 
     useMotionValueEvent(scrollYProgress, "change", (latest) => {
-        // 12 projects = 30 degrees per project.
-        // We want 1 full rotation to cover all 12 projects.
-        // So 0-1 scroll = 0-360 degrees (or multiples).
+        // Range: 7:00 AM (7) to 10:00 PM (22)
+        // Total duration: 15 hours
+        const currentHour = 7 + (latest * 15)
 
-        const totalRotations = 1
-        const degrees = latest * 360 * totalRotations
-        // Add a small offset to ensure it snaps at the right moment? 
-        // Actually, floor(degrees / 30) is correct for 0-30 -> index 0, 30-60 -> index 1.
-        const step = Math.floor(degrees / 30)
+        // Find the project that is closest to the current hour, 
+        // but only if we have reached its time? 
+        // Or just simple segments?
 
-        // Modulo to loop through projects
-        const index = step % projects.length
+        // Let's find the project with the largest time <= currentHour
+        // But since projects are sorted by time, we can just findLastIndex?
+        // Or just iterate.
 
-        if (index !== activeIndex) {
-            setActiveIndex(index)
+        let newActiveIndex = 0
+        for (let i = 0; i < projects.length; i++) {
+            if (currentHour >= projects[i].time - 0.5) { // Buffer of 30 mins
+                newActiveIndex = i
+            }
+        }
+
+        if (newActiveIndex !== activeIndex) {
+            setActiveIndex(newActiveIndex)
         }
     })
 
@@ -59,7 +76,7 @@ export default function WorkPage() {
                     style={{ backgroundColor: projects[activeIndex]?.bg || '#f7f7f7' }}
                 />
 
-                <WorkClock scrollYProgress={scrollYProgress} totalProjects={projects.length} rotations={1} />
+                <WorkClock scrollYProgress={scrollYProgress} projects={projects} activeIndex={activeIndex} rotations={1} useScrollTime={true} />
                 <WorkList projects={projects} activeIndex={activeIndex} />
 
                 {/* Counter */}
