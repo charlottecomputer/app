@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react"
 import { motion, AnimatePresence } from "motion/react"
+import { Card } from "../../../packages/@aliveui/ui/card"
 
 const words = [
     "Todo Lists",
@@ -80,42 +81,44 @@ export function Hero() {
     return (
         <section className="layout-fh">
             <div className="home-hero__content">
-                <h1
-                    className="h1"
-                    style={{ opacity: 1 }}
-                    aria-label={`Reinventing ${words.join(", ")}`}
-                >
-                    <div className="word-container">
-                        <div className="word-top">
-                            <motion.span
-                                initial={{ y: "100%" }}
-                                animate={{ y: 0 }}
-                                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                            >
-                                Reinventing
-                            </motion.span>
-                        </div>
-                    </div>
-                    <div className="word-container">
-                        <div className="word-bottom">
-                            <AnimatePresence mode="wait">
-                                <motion.div
-                                    key={currentIndex}
-                                    className="absolute w-full"
+                <Card>
+                    <h1
+                        className="h1"
+                        style={{ opacity: 1 }}
+                        aria-label={`Reinventing ${words.join(", ")}`}
+                    >
+                        <div className="relative">
+                            <div className="word-top">
+                                <motion.span
                                     initial={{ y: "100%" }}
                                     animate={{ y: 0 }}
-                                    exit={{ y: 0 }}
-                                    transition={{
-                                        duration: isScrolling ? 0 : 0.2,
-                                        ease: [0.16, 1, 0.3, 1]
-                                    }}
+                                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                                 >
-                                    <span>{words[currentIndex]}</span>
-                                </motion.div>
-                            </AnimatePresence>
+                                    Reinventing
+                                </motion.span>
+                            </div>
                         </div>
-                    </div>
-                </h1>
+                        <div className="relative">
+                            <div className="word-bottom">
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={currentIndex}
+                                        className="absolute w-full"
+                                        initial={{ y: "100%" }}
+                                        animate={{ y: 0 }}
+                                        exit={{ y: 0 }}
+                                        transition={{
+                                            duration: isScrolling ? 0 : 0.2,
+                                            ease: [0.16, 1, 0.3, 1]
+                                        }}
+                                    >
+                                        <span>{words[currentIndex]}</span>
+                                    </motion.div>
+                                </AnimatePresence>
+                            </div>
+                        </div>
+                    </h1>
+                </Card>
             </div>
             <div className="scroll-label">
                 <p className="b-small" style={{ opacity: 1 }}>

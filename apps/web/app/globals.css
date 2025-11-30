@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./clock-properties.css";
 
 @theme {
   --font-sans: var(--font-dm-sans);
@@ -11,6 +12,23 @@
   --font-itc: var(--font-eb-garamond), serif;
   --font-jb: var(--font-jetbrains-mono), monospace;
   --font-dm: var(--font-dm-sans), sans-serif;
+
+  /* Clock Variables */
+  --minute-marker-opacity: 1;
+  --inner-shadow-opacity: 0.15;
+  --outer-shadow-opacity: 1;
+  --reflection-opacity: 0.5;
+  --glossy-opacity: 0.3;
+  --hour-number-opacity: 1;
+  --hour-number-color: rgba(50, 50, 50, 0.9);
+  --minute-marker-color: rgba(80, 80, 80, 0.5);
+  --hand-color: rgba(50, 50, 50, 0.9);
+  --second-hand-color: rgba(255, 107, 0, 1);
+  --shadow-layer1-opacity: 0.1;
+  --shadow-layer2-opacity: 0.1;
+  --shadow-layer3-opacity: 0.1;
+  --primary-light-angle: -45deg;
+  --dark-edge-angle: 135deg;
 
   /* Colors */
   --black: #111;
@@ -244,9 +262,7 @@ html.lenis {
   user-select: none;
 }
 
-.home-hero__content h1 .word-container {
-  position: relative;
-}
+
 
 .home-hero__content h1 .word-container:first-child {
   z-index: 1;

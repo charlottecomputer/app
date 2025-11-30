@@ -1,0 +1,11 @@
+@property --primary-light-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: -75deg;
+}
+
+@property --dark-edge-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 105deg;
+}
