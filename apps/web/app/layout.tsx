@@ -25,8 +25,8 @@ const ebGaramond = EB_Garamond({
 import { ClientLayout } from "./client-layout";
 
 export const metadata: Metadata = {
-  title: "Applause Clone",
-  description: "A clone of applause.studiofreight.com",
+  title: "charlotte.computer",
+  description: "A personal app store",
 };
 
 export default function RootLayout({

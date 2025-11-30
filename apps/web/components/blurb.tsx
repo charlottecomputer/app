@@ -44,6 +44,7 @@ function Word({ word, startIndex, currentCharIndex, totalChars }: WordProps) {
 export function Blurb() {
     const [scrollProgress, setScrollProgress] = useState(0)
     const containerRef = useRef<HTMLDivElement>(null)
+    const stickyRef = useRef<HTMLDivElement>(null)
 
     const text = `is reinventing mobile apps. We craft and curate `
     const text2 = ` with an emphasis on excellent, elegant, and ethical design. For users lost in a sea of dark patterns, we aspire to be a beacon of light. `
@@ -56,15 +57,28 @@ export function Blurb() {
     useEffect(() => {
         const handleScroll = () => {
             const container = containerRef.current
-            if (!container) return
+            const sticky = stickyRef.current
+            if (!container || !sticky) return
 
-            const rect = container.getBoundingClientRect()
-            const containerTop = container.offsetTop
+            const containerRect = container.getBoundingClientRect()
+            const stickyRect = sticky.getBoundingClientRect()
+
+            // Calculate progress based on how far the container has scrolled past the sticky element
+            // When container top hits the top of the viewport (or offset), progress starts
+            // When container bottom hits the bottom of the sticky element, progress ends
+
+            const startY = container.offsetTop
+            const endY = startY + scrollRange
             const scrollY = window.scrollY
 
-            // Calculate how far we've scrolled into this section
-            const scrollIntoView = scrollY - containerTop + window.innerHeight * 0.2
-            const progress = Math.min(1, Math.max(0, scrollIntoView / scrollRange))
+            // We want the animation to happen while the element is sticky
+            // The element becomes sticky when scrollY >= startY - topOffset
+            // And stops being sticky when scrollY >= endY - windowHeight + bottomOffset
+
+            // Simplified: map the scroll position within the container's height to 0-1
+            // We add some buffer so it starts/ends smoothly
+
+            const progress = Math.min(1, Math.max(0, (scrollY - startY + window.innerHeight * 0.5) / scrollRange))
 
             setScrollProgress(progress)
         }
@@ -93,15 +107,13 @@ export function Blurb() {
             }}
         >
             <section
+                ref={stickyRef}
                 className="home-blurb layout-fh"
                 style={{
-                    position: scrollProgress > 0 && scrollProgress < 1 ? "fixed" : "absolute",
-                    top: scrollProgress >= 1 ? "auto" : "125px",
-                    bottom: scrollProgress >= 1 ? "0" : "auto",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    width: "100vw",
-                    maxWidth: "1107px",
+                    position: "sticky",
+                    top: "125px",
+                    left: "0",
+                    width: "100%",
                     height: "600px",
                     margin: 0,
                     padding: "24.6px",
@@ -205,3 +217,4 @@ export function Blurb() {
         </div>
     )
 }
+
