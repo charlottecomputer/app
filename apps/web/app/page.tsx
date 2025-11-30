@@ -31,12 +31,7 @@ export default function Home() {
           height={38}
           priority
         />
-        <ol>
-          <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+        Hi. I'm Charlotte. This is charlotte computer. What is this?
 
         <div className={styles.ctas}>
           <a
