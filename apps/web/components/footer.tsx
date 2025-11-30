@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "motion/react"
+import { Card, CardContent, Button, Input } from "@aliveui"
 
 export function Footer() {
     return (
@@ -13,11 +14,19 @@ export function Footer() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     >
+                        <Card>
+                            <CardContent>
+                                <Input>
+                                </Input>
+                            </CardContent>
+                            <Button>Submit</Button>
+
+                        </Card>
                         <h2 className="h1" style={{ fontSize: "12vw", lineHeight: 0.9 }}>
                             charlotte.computer
                         </h2>
                         <p className="b-small" style={{ marginTop: "var(--spacer-md)", opacity: 0.6 }}>
-                            charlotte.computer
+                            The apps you need, minimal for use
                         </p>
                     </motion.div>
 
