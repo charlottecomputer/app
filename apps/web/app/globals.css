@@ -330,6 +330,8 @@ html.lenis {
     border: 1px solid var(--grey-100);
     border-radius: 14.301191766px;
     margin-right: 0.5vw;
+    width: min-content;
+    display: inline;
     padding: 0.3vw 0.65vw;
   }
 }
