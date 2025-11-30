@@ -323,6 +323,7 @@ html.lenis {
   overflow: hidden;
   position: relative;
   white-space: nowrap;
+  height: min-content;
 }
 
 @media (min-width: 800px) {
@@ -331,6 +332,7 @@ html.lenis {
     border-radius: 14.301191766px;
     margin-right: 0.5vw;
     width: min-content;
+    height: min-content;
     display: inline;
     padding: 0.3vw 0.65vw;
   }
@@ -339,7 +341,7 @@ html.lenis {
 .home-blurb-item__content {
   color: var(--theme-contrast);
   pointer-events: none;
-  position: relative;
+  /* position: relative; */
 }
 
 /* Portfolio Styles */

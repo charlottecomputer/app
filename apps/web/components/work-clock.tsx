@@ -47,7 +47,7 @@ export function WorkClock({ scrollYProgress, totalProjects, colorClass, rotation
     const smoothRotate = useSpring(rotate, { damping: 50, stiffness: 400 })
 
     return (
-        <div className={cn("fixed inset-0 flex items-center justify-center pointer-events-none z-10 mix-blend-difference", colorClass || "text-white")}>
+        <div className={cn("absolute inset-0 flex items-center justify-center pointer-events-none z-10 mix-blend-difference", colorClass || "text-white")}>
             <div className="relative w-[60vh] h-[60vh] md:w-[80vh] md:h-[80vh] max-w-[90vw] max-h-[90vw]">
                 {/* Clock Face / Dial */}
                 <div className="absolute inset-0 rounded-full border border-current " />

@@ -9,7 +9,7 @@ interface CharProps {
 
 function Char({ char, opacity }: CharProps) {
     return (
-        <div
+        <span
             className="char"
             style={{
                 position: "relative",
@@ -18,7 +18,7 @@ function Char({ char, opacity }: CharProps) {
             }}
         >
             {char}
-        </div>
+        </span>
     )
 }
 
@@ -31,13 +31,13 @@ interface WordProps {
 
 function Word({ word, startIndex, currentCharIndex, totalChars }: WordProps) {
     return (
-        <div style={{ position: "relative", display: "inline-block" }}>
+        <span style={{ position: "relative", display: "inline-block" }}>
             {word.split("").map((char, i) => {
                 const charIndex = startIndex + i
                 const progress = (currentCharIndex - charIndex) / 20 + 1
                 return <Char key={i} char={char} opacity={progress} />
             })}
-        </div>
+        </span>
     )
 }
 
@@ -126,13 +126,13 @@ export function Blurb() {
                         <h4>
                             <div className="storyblok-content body">
                                 <p>
-                                    <div className="home-blurb-item" style={{ opacity: 1 }}>
+                                    <span className="home-blurb-item" style={{ opacity: 1, display: 'inline-block' }}>
                                         <span className="home-blurb-item__content">
                                             <span className="home-blurb-item__content--text">
-                                                <span>Applause</span>
+                                                <span>charlotte.computer</span>
                                             </span>
                                         </span>
-                                    </div>
+                                    </span>
                                     {" "}
                                     {words1.map((word, i) => {
                                         const startIdx = charCounter
@@ -152,15 +152,13 @@ export function Blurb() {
                                         charCounter += 1 // space
                                         return element
                                     })}
-                                </p>
-                                <p>
-                                    <div className="home-blurb-item" style={{ opacity: 1 }}>
+                                    <span className="home-blurb-item" style={{ opacity: 1, display: 'inline-block', justifyContent: 'center', alignItems: 'center' }}>
                                         <span className="home-blurb-item__content">
                                             <span className="home-blurb-item__content--text">
                                                 <span>brands</span>
                                             </span>
                                         </span>
-                                    </div>
+                                    </span>
                                     {" "}
                                     {words2.map((word, i) => {
                                         const startIdx = charCounter
@@ -180,15 +178,13 @@ export function Blurb() {
                                         charCounter += 1 // space
                                         return element
                                     })}
-                                </p>
-                                <p>
-                                    <div className="home-blurb-item" style={{ opacity: 1 }}>
+                                    <span className="home-blurb-item" style={{ opacity: 1, display: 'inline-block' }}>
                                         <span className="home-blurb-item__content">
                                             <span className="home-blurb-item__content--text">
                                                 <span>Join us</span>
                                             </span>
                                         </span>
-                                    </div>
+                                    </span>
                                     {" "}
                                     {words3.map((word, i) => {
                                         const startIdx = charCounter

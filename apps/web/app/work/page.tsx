@@ -36,7 +36,7 @@ export default function WorkPage() {
         // We want 1 full rotation to cover all 12 projects.
         // So 0-1 scroll = 0-360 degrees (or multiples).
 
-        const totalRotations = 10
+        const totalRotations = 1
         const degrees = latest * 360 * totalRotations
         // Add a small offset to ensure it snaps at the right moment? 
         // Actually, floor(degrees / 30) is correct for 0-30 -> index 0, 30-60 -> index 1.
@@ -51,24 +51,19 @@ export default function WorkPage() {
     })
 
     return (
-        <main className="min-h-screen">
-            <div className="fixed top-0 left-0 w-full z-50">
-                <Navigation />
-            </div>
+        <div ref={containerRef} className="relative h-[2000vh]">
+            <div className="sticky top-0 h-screen overflow-hidden">
+                {/* Dynamic Background Layer */}
+                <div
+                    className="absolute inset-0 z-0 transition-colors duration-700 ease-in-out"
+                    style={{ backgroundColor: projects[activeIndex]?.bg || '#f7f7f7' }}
+                />
 
-            {/* Dynamic Background Layer */}
-            <div
-                className="fixed inset-0 z-0 transition-colors duration-700 ease-in-out"
-                style={{ backgroundColor: projects[activeIndex]?.bg || '#f7f7f7' }}
-            />
-
-            {/* Scroll Container */}
-            <div ref={containerRef} className="h-[2000vh] relative z-10">
-                <WorkClock scrollYProgress={scrollYProgress} totalProjects={projects.length} rotations={10} />
+                <WorkClock scrollYProgress={scrollYProgress} totalProjects={projects.length} rotations={1} />
                 <WorkList projects={projects} activeIndex={activeIndex} />
 
                 {/* Counter */}
-                <div className="fixed bottom-8 left-8 md:bottom-12 md:left-12 z-50 mix-blend-difference text-white font-mono text-sm">
+                <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12 z-50 mix-blend-difference text-white font-mono text-sm">
                     <span className="text-xl md:text-2xl font-bold block">
                         {String(activeIndex + 1).padStart(2, '0')}
                     </span>
@@ -77,6 +72,6 @@ export default function WorkPage() {
                     </span>
                 </div>
             </div>
-        </main>
+        </div>
     )
 }

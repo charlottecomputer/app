@@ -14,10 +14,10 @@ export function Footer() {
                         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     >
                         <h2 className="h1" style={{ fontSize: "12vw", lineHeight: 0.9 }}>
-                            Applause
+                            charlotte.computer
                         </h2>
                         <p className="b-small" style={{ marginTop: "var(--spacer-md)", opacity: 0.6 }}>
-                            Studio Freight
+                            charlotte.computer
                         </p>
                     </motion.div>
 
@@ -30,7 +30,7 @@ export function Footer() {
                     >
                         <a href="#" className="b-small link">Twitter</a>
                         <a href="#" className="b-small link">Instagram</a>
-                        <a href="mailto:hello@applause.studio" className="b-small link">Email</a>
+                        <a href="mailto:hello@charlotte.computer.studio" className="b-small link">Email</a>
                     </motion.div>
 
                     <motion.div
@@ -40,7 +40,7 @@ export function Footer() {
                         transition={{ duration: 0.8, delay: 0.4 }}
                         style={{ marginTop: "var(--spacer-xxl)", opacity: 0.4 }}
                     >
-                        <p className="b-small">© 2024 Applause. All rights reserved.</p>
+                        <p className="b-small">© 2024 charlotte.computer. All rights reserved.</p>
                     </motion.div>
                 </div>
             </div>

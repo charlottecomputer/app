@@ -24,9 +24,9 @@ export function Navigation() {
             className="fixed top-0 left-0 right-0 z-40 flex items-start justify-between px-4 py-4 md:px-6 md:py-6 text-[#1a1a1a] mix-blend-difference invert"
         >
             <Link href="/" className="font-sans font-bold tracking-tighter text-xl md:text-2xl uppercase leading-none">
-                Applause
+                charlotte.computer
                 <span className="block text-[10px] font-mono opacity-60 tracking-normal normal-case">
-                    Studio Freight
+                    charlotte.computer
                 </span>
             </Link>
 

@@ -18,7 +18,7 @@ export function WorkList({ projects, activeIndex }: WorkListProps) {
     const project = projects[activeIndex]
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-20 mix-blend-difference text-white">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 mix-blend-difference text-white">
             <div className="w-full max-w-4xl px-8 bg-pink-200 flex justify-between items-end">
                 <div className="flex flex-col gap-2">
                     <div className="h-24 md:h-32 relative overflow-hidden">
