@@ -1,59 +1,125 @@
 "use client"
 
+import { useState } from "react"
+import { motion } from "motion/react"
+import { MacOSDock } from "@aliveui"
+
 const apps = [
-    { name: "Bartender", id: "bartender" },
-    { name: "Blood Pressure Tracker+", id: "blood-pressure" },
-    { name: "Glucose", id: "glucose" },
-    { name: "Group Text", id: "group-text" },
-    { name: "Meditation Moments", id: "meditation" },
-    { name: "Nomorobo", id: "nomorobo" },
-    { name: "SeizAlarm", id: "seizalarm" },
-    { name: "Strongbox", id: "strongbox" },
-    { name: "Voice Dream", id: "voice-dream" },
+    {
+        id: 'finder',
+        name: 'Finder',
+        icon: 'https://cdn.jim-nielsen.com/macos/1024/finder-2021-09-10.png?rf=1024'
+    },
+    {
+        id: 'calculator',
+        name: 'Calculator',
+        icon: 'https://cdn.jim-nielsen.com/macos/1024/calculator-2021-04-29.png?rf=1024'
+    },
+    {
+        id: 'terminal',
+        name: 'Terminal',
+        icon: 'https://cdn.jim-nielsen.com/macos/1024/terminal-2021-06-03.png?rf=1024'
+    },
+    {
+        id: 'mail',
+        name: 'Mail',
+        icon: 'https://cdn.jim-nielsen.com/macos/1024/mail-2021-05-25.png?rf=1024'
+    },
+    {
+        id: 'notes',
+        name: 'Notes',
+        icon: 'https://cdn.jim-nielsen.com/macos/1024/notes-2021-05-25.png?rf=1024'
+    },
+    {
+        id: 'safari',
+        name: 'Safari',
+        icon: 'https://cdn.jim-nielsen.com/macos/1024/safari-2021-06-02.png?rf=1024'
+    },
+    {
+        id: 'photos',
+        name: 'Photos',
+        icon: 'https://cdn.jim-nielsen.com/macos/1024/photos-2021-05-28.png?rf=1024'
+    },
+    {
+        id: 'music',
+        name: 'Music',
+        icon: 'https://cdn.jim-nielsen.com/macos/1024/music-2021-05-25.png?rf=1024'
+    },
+    {
+        id: 'calendar',
+        name: 'Calendar',
+        icon: 'https://cdn.jim-nielsen.com/macos/1024/calendar-2021-04-29.png?rf=1024'
+    },
 ]
 
 export function Portfolio() {
+    const [openApps, setOpenApps] = useState<string[]>(['finder', 'safari'])
+
+    const handleAppClick = (appId: string) => {
+        console.log('App clicked:', appId)
+
+        setOpenApps(prev =>
+            prev.includes(appId)
+                ? prev.filter(id => id !== appId)
+                : [...prev, appId]
+        )
+    }
+
     return (
-        <section className="home-portfolio layout-fh" style={{ maxHeight: "60svh", position: "relative" }}>
+        <section className="home-portfolio layout-fh" style={{ position: "relative" }}>
             <div className="home-portfolio__content layout-block">
                 <p className="h1">
                     <span>
-                        <span className="animate">Portfolio</span>
+                        <motion.span
+                            initial={{ y: "100%" }}
+                            whileInView={{ y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                            className="block"
+                        >
+                            Portfolio
+                        </motion.span>
                     </span>
                     <span className="b-small counter">
-                        <span className="animate">0{apps.length}</span>
+                        <motion.span
+                            initial={{ y: "100%" }}
+                            whileInView={{ y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                            className="block"
+                        >
+                            0{apps.length}
+                        </motion.span>
                     </span>
                 </p>
                 <a href="/portfolio/" className="a-div has-link b-small link">
-                    <span className="animate">
-                        <span className="blue-dot-hover b-small">
+                    <span className="block overflow-hidden">
+                        <motion.span
+                            initial={{ y: "100%" }}
+                            whileInView={{ y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                            className="blue-dot-hover b-small block"
+                        >
                             <span className="text-content">See Full Portfolio</span>
-                        </span>
+                        </motion.span>
                     </span>
                 </a>
             </div>
-            <div className="home-portfolio__footer" style={{ bottom: 0, position: "relative", width: "100%", display: "flex", justifyContent: "center" }}>
-                <div className="home-portfolio__footer__content" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "var(--spacer-x) var(--spacer-md)", marginTop: "var(--spacer-xl)", maxWidth: "calc(var(--icon-size) * 4 + var(--spacer-md) * 3)" }}>
-                    {apps.map((app) => (
-                        <div key={app.id} className="dock-icon" style={{ height: "66px", width: "66px" }}>
-                            <div>
-                                <div style={{ opacity: 1, transform: "translate(0px, 0px)" }}>
-                                    <div className="btn-icon active is-svg" style={{ backgroundColor: "var(--grey-100)", borderRadius: "14.301191766px", height: "100%", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                        <div className="btn-icon__content">
-                                            <span className="btn-icon__content--icon" style={{ fontSize: "20px", color: "var(--white)" }}>
-                                                {app.name.charAt(0)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <p className="p-small">
-                                <span>{app.name}</span>
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <motion.div
+                className="home-portfolio__footer"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+                style={{ bottom: 0, position: "relative", width: "100%", display: "flex", justifyContent: "center", marginTop: "var(--spacer-xl)" }}
+            >
+                <MacOSDock
+                    apps={apps}
+                    onAppClick={handleAppClick}
+                    openApps={openApps}
+                />
+            </motion.div>
         </section>
     )
 }

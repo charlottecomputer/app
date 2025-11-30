@@ -1,6 +1,7 @@
 import { Hero } from "../components/hero"
 import { Blurb } from "../components/blurb"
 import { Portfolio } from "../components/portfolio"
+import { Footer } from "../components/footer"
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <Hero />
       <Blurb />
       <Portfolio />
+      <Footer />
     </main>
   )
 }

@@ -1,6 +1,7 @@
 export * from "./lib/utils";
 export * from "./ui/loader";
-export * from "./ui/text";
-export * from "./ui/navigation";
-export * from "./ui/ascii-overlay";
-export * from "./ui/marquee";
+export { ASCIIOverlay } from "./ui/ascii-overlay";
+export { Navigation } from "./ui/navigation";
+export { Marquee } from "./ui/marquee";
+export { Button } from "./ui/button";
+export { MacOSDock, type DockApp, type MacOSDockProps } from "./components/ui/shadcn-io/mac-os-dock";
