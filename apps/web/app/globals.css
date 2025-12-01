@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./clock-properties.css";
+@source "../../../packages/@aliveui";
 
 @theme {
   --font-sans: var(--font-dm-sans);
