@@ -85,6 +85,7 @@ export function Hero() {
                 <Card>
                     <Text
                         variant="h1"
+                        className="flex flex-col justify-center items-center text-center relative select-none leading-[1.01]"
                         style={{ opacity: 1 }}
                         aria-label={`Reinventing ${words.join(", ")}`}
                     >
