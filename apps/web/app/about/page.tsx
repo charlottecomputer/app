@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ScrollRevealText, ScrollRevealSegment } from '@aliveui';
+import { Text } from '../../../../packages/@aliveui/ui/text';
 
 const segments: ScrollRevealSegment[] = [
     { type: 'label', content: 'Letter from Charlotte' },
@@ -17,7 +18,7 @@ export default function AboutPage() {
             <section className="about-hero layout-fh">
                 <div className="about-hero__content">
 
-                    <h1 className="super" aria-label="Towards a better app store">
+                    <Text variant="super" aria-label="Towards a better app store">
                         <span className="upper">
                             <span>Minimal apps</span>
                         </span>
@@ -25,7 +26,7 @@ export default function AboutPage() {
                         <span className="lower">
                             <span>to get shit done</span>
                         </span>
-                    </h1>
+                    </Text>
                 </div>
             </section>
 

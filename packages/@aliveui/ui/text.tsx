@@ -15,6 +15,8 @@ const textVariants = cva(
         medium: "font-medium",
         bold: "font-bold",
         black: "font-black",
+        h1: "font-[family-name:var(--font-itc)] text-[length:17.0666666667vw] font-light tracking-[-0.01em] leading-[0.9] md:text-[length:8.6111111111vw]",
+        super: "font-[family-name:var(--font-itc)] text-[length:14.9333333333vw] font-light tracking-[-0.02em] leading-[0.9] md:text-[length:12.5vw]",
       },
       size: {
         xs: "text-xs leading-4",

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { motion } from "motion/react"
 import { MacOSDock } from "@aliveui"
+import { Text } from "../../../packages/@aliveui/ui/text"
 
 const apps = [
     {
@@ -68,7 +69,7 @@ export function Portfolio() {
     return (
         <section className="home-portfolio layout-fh" style={{ position: "relative" }}>
             <div className="home-portfolio__content layout-block">
-                <p className="h1">
+                <Text variant="h1">
                     <span>
                         <motion.span
                             initial={{ y: "100%" }}
@@ -91,7 +92,7 @@ export function Portfolio() {
                             0{apps.length}
                         </motion.span>
                     </span>
-                </p>
+                </Text>
                 <a href="/portfolio/" className="a-div has-link b-small link">
                     <span className="block overflow-hidden">
                         <motion.span

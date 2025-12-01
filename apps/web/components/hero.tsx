@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { Card } from "../../../packages/@aliveui/ui/card"
+import { Text } from "../../../packages/@aliveui/ui/text"
 
 const words = [
     "Todo Lists",
@@ -82,28 +83,35 @@ export function Hero() {
         <section className="layout-fh">
             <div className="home-hero__content">
                 <Card>
-                    <h1
-                        className="h1"
+                    <Text
+                        variant="h1"
                         style={{ opacity: 1 }}
                         aria-label={`Reinventing ${words.join(", ")}`}
                     >
-                        <div className="relative">
-                            <div className="word-top">
-                                <motion.span
+                        <div className="relative z-10">
+                            <div className="word-top relative w-[100vw]">
+                                <motion.div
+                                    className="overflow-hidden relative whitespace-nowrap w-full"
                                     initial={{ y: "100%" }}
                                     animate={{ y: 0 }}
                                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                                 >
                                     Reinventing
-                                </motion.span>
+                                </motion.div>
                             </div>
                         </div>
-                        <div className="relative">
-                            <div className="word-bottom">
+                        <div
+                            className="relative"
+                            style={{
+                                maskImage: "linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent)",
+                                WebkitMaskImage: "linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent)"
+                            }}
+                        >
+                            <div className="word-bottom relative w-[100vw] text-[var(--grey-300)] h-[17.0666666667vw] md:h-[8.6111111111vw]">
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={currentIndex}
-                                        className="absolute w-full"
+                                        className="absolute w-full overflow-hidden relative whitespace-nowrap"
                                         initial={{ y: "100%" }}
                                         animate={{ y: 0 }}
                                         exit={{ y: 0 }}
@@ -117,7 +125,7 @@ export function Hero() {
                                 </AnimatePresence>
                             </div>
                         </div>
-                    </h1>
+                    </Text>
                 </Card>
             </div>
             <div className="scroll-label">
