@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "../../../packages/@aliveui/lib/utils"
-import { motion, useScroll, useTransform, useSpring, MotionValue } from "motion/react"
+import { motion, useScroll, useTransform, useSpring, MotionValue, useMotionValueEvent, AnimatePresence } from "motion/react"
 import { useEffect, useState } from "react"
 
 import { LucideIcon } from "lucide-react"
@@ -29,6 +29,7 @@ interface WorkClockProps {
 export function WorkClock({ scrollYProgress, projects, activeIndex, colorClass, rotations = 1, useScrollTime = false }: WorkClockProps) {
     const [time, setTime] = useState<Date | null>(null)
     const [initialMinutes, setInitialMinutes] = useState(0)
+    const [isPm, setIsPm] = useState(false)
 
     useEffect(() => {
         const now = new Date()
@@ -37,6 +38,33 @@ export function WorkClock({ scrollYProgress, projects, activeIndex, colorClass, 
 
         const timer = setInterval(() => setTime(new Date()), 1000) // Update every second for second hand
         return () => clearInterval(timer)
+    }, [])
+
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        // Range: 7:00 AM (7) to 10:00 PM (22)
+        // Total duration: 15 hours
+        const currentHour = 7 + (latest * 15)
+
+        // 12pm is hour 12.
+        // Let's say we want it to be dark from 12pm onwards? 
+        // Or just "when it hits 12pm" implies a specific point?
+        // "turns the entire site from light to dark mode when it hits 12pm, and the experience continues as dark mode"
+        // "if you scroll back up the page past 12pm again it turns light mode"
+
+        if (currentHour >= 12) {
+            document.documentElement.classList.add("dark")
+            setIsPm(true)
+        } else {
+            document.documentElement.classList.remove("dark")
+            setIsPm(false)
+        }
+    })
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            document.documentElement.classList.remove("dark")
+        }
     }, [])
 
     // Hour hand: Real time OR Scroll controlled
@@ -109,13 +137,15 @@ export function WorkClock({ scrollYProgress, projects, activeIndex, colorClass, 
                                     const left = 175 + Math.sin(angle) * radius - 15;
                                     const top = 175 - Math.cos(angle) * radius - 10;
                                     return (
-                                        <div key={i} className="clock-number absolute text-[16px] font-medium text-[var(--hour-number-color)] text-center w-[30px] h-[20px] leading-[20px]  z-[15] opacity-[var(--hour-number-opacity)] select-none pointer-events-none" style={{ left: `${left}px`, top: `${top}px` }}>
+                                        <div key={i} className="clock-number absolute text-[16px] font-medium text-[var(--hour-number-color)] text-center w-[30px] h-[20px] leading-[20px]  z-[15] opacity-[var(--hour-number-opacity)] select-none pointer-events-none transition-colors duration-700 ease-in-out" style={{ left: `${left}px`, top: `${top}px` }}>
                                             {hourIndex}
                                         </div>
                                     )
                                 } else {
                                     return (
-                                        <div key={i} className="minute-marker absolute w-[1px] h-[10px] bg-[var(--minute-marker-color)] top-[10px] left-[175px] origin-[center_165px] shadow-[0_0_2px_rgba(255,255,255,0.3)] opacity-[var(--minute-marker-opacity)]" style={{ transform: `rotate(${i * 6}deg)` }} />
+
+                                        <div key={i} className="minute-marker absolute w-[1px] h-[10px] bg-[var(--minute-marker-color)] top-[10px] left-[175px] origin-[center_165px] shadow-[0_0_2px_rgba(255,255,255,0.3)] opacity-[var(--minute-marker-opacity)] transition-colors duration-700 ease-in-out" style={{ transform: `rotate(${i * 6}deg)` }} />
+
                                     )
                                 }
                             })}
@@ -123,51 +153,102 @@ export function WorkClock({ scrollYProgress, projects, activeIndex, colorClass, 
 
                         {/* App Indicators */}
                         <div className="clock-app-indicators absolute top-0 left-0 w-full h-full z-[14]">
-                            {projects.map((project, index) => {
-                                // Calculate angle based on time (12-hour clock)
-                                // 12:00 = 0 degrees, 3:00 = 90 degrees, etc.
-                                // Each hour is 30 degrees.
-                                const hour = project.time % 12;
-                                const angle = hour * 30; // 0-360 degrees
+                            <AnimatePresence mode="wait">
+                                {isPm ? (
+                                    // PM Projects
+                                    projects.filter(p => p.time >= 12).map((project, index) => {
+                                        // Adjust index for PM set if needed, or just find in original array
+                                        const originalIndex = projects.findIndex(p => p.id === project.id);
+                                        const hour = project.time % 12;
+                                        const angle = hour * 30;
+                                        const radius = 110;
+                                        const radian = (angle * Math.PI) / 180;
+                                        const left = 175 + Math.sin(radian) * radius - 12;
+                                        const top = 175 - Math.cos(radian) * radius - 12;
+                                        const isActive = originalIndex === activeIndex;
 
-                                // Position the icon slightly inside the numbers
-                                const radius = 110;
-                                const radian = (angle * Math.PI) / 180;
-                                const left = 175 + Math.sin(radian) * radius - 12; // Center 24px icon
-                                const top = 175 - Math.cos(radian) * radius - 12;
+                                        return (
+                                            <motion.div
+                                                key={project.id}
+                                                initial={{ scale: 0, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                exit={{ scale: 0, opacity: 0 }}
+                                                transition={{ duration: 0.4, ease: "backOut" }}
+                                                className="absolute w-[24px] h-[24px] flex items-center justify-center z-[16]"
+                                                style={{
+                                                    left: `${left}px`,
+                                                    top: `${top}px`,
+                                                }}
+                                            >
+                                                <div style={{
+                                                    transform: isActive ? 'scale(1.5)' : 'scale(1)',
+                                                    opacity: isActive ? 1 : 0.6,
+                                                    transition: 'all 0.3s ease'
+                                                }}>
+                                                    <project.icon
+                                                        size={16}
+                                                        className={cn(
+                                                            "transition-colors duration-700 ease-in-out",
+                                                            isActive ? "text-foreground" : "text-muted-foreground"
+                                                        )}
+                                                        strokeWidth={isActive ? 3 : 2.5}
+                                                    />
+                                                </div>
+                                            </motion.div>
+                                        )
+                                    })
+                                ) : (
+                                    // AM Projects
+                                    projects.filter(p => p.time < 12).map((project, index) => {
+                                        const originalIndex = projects.findIndex(p => p.id === project.id);
+                                        const hour = project.time % 12;
+                                        const angle = hour * 30;
+                                        const radius = 110;
+                                        const radian = (angle * Math.PI) / 180;
+                                        const left = 175 + Math.sin(radian) * radius - 12;
+                                        const top = 175 - Math.cos(radian) * radius - 12;
+                                        const isActive = originalIndex === activeIndex;
 
-                                const isActive = index === activeIndex;
-
-                                return (
-                                    <div
-                                        key={project.id}
-                                        className="absolute w-[24px] h-[24px] flex items-center justify-center z-[16] transition-all duration-300"
-                                        style={{
-                                            left: `${left}px`,
-                                            top: `${top}px`,
-                                            transform: isActive ? 'scale(1.5)' : 'scale(1)',
-                                            opacity: isActive ? 1 : 0.6
-                                        }}
-                                    >
-                                        <project.icon
-                                            size={16}
-                                            className={cn(
-                                                "transition-colors duration-300",
-                                                isActive ? "text-black" : "text-[rgba(50,50,50,0.8)]"
-                                            )}
-                                            strokeWidth={isActive ? 3 : 2.5}
-                                        />
-                                    </div>
-                                )
-                            })}
+                                        return (
+                                            <motion.div
+                                                key={project.id}
+                                                initial={{ scale: 0, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                exit={{ scale: 0, opacity: 0 }}
+                                                transition={{ duration: 0.4, ease: "backOut" }}
+                                                className="absolute w-[24px] h-[24px] flex items-center justify-center z-[16]"
+                                                style={{
+                                                    left: `${left}px`,
+                                                    top: `${top}px`,
+                                                }}
+                                            >
+                                                <div style={{
+                                                    transform: isActive ? 'scale(1.5)' : 'scale(1)',
+                                                    opacity: isActive ? 1 : 0.6,
+                                                    transition: 'all 0.3s ease'
+                                                }}>
+                                                    <project.icon
+                                                        size={16}
+                                                        className={cn(
+                                                            "transition-colors duration-700 ease-in-out",
+                                                            isActive ? "text-foreground" : "text-muted-foreground"
+                                                        )}
+                                                        strokeWidth={isActive ? 3 : 2.5}
+                                                    />
+                                                </div>
+                                            </motion.div>
+                                        )
+                                    })
+                                )}
+                            </AnimatePresence>
                         </div>
 
                         {/* Hands */}
                         {/* Hour Hand */}
-                        <motion.div className="hour-hand clock-hand absolute w-[6px] h-[70px] bg-[var(--hand-color)] -ml-[3px] rounded-[3px] shadow-[0_0_5px_rgba(0,0,0,0.3)] origin-[center_bottom] bottom-[175px] left-[175px] z-[15] will-change-transform" style={{ rotate: hourRotation }} />
+                        <motion.div className="hour-hand clock-hand absolute w-[6px] h-[70px] bg-[var(--hand-color)] -ml-[3px] rounded-[3px] shadow-[0_0_5px_rgba(0,0,0,0.3)] origin-[center_bottom] bottom-[175px] left-[175px] z-[15] will-change-transform transition-colors duration-700 ease-in-out" style={{ rotate: hourRotation }} />
 
                         {/* Minute Hand (Scroll Controlled) */}
-                        <motion.div className="minute-hand clock-hand absolute w-[4px] h-[100px] bg-[var(--hand-color)] -ml-[2px] rounded-[2px] shadow-[0_0_5px_rgba(0,0,0,0.3)] origin-[center_bottom] bottom-[175px] left-[175px] z-[15] will-change-transform" style={{ rotate: smoothRotate }} />
+                        <motion.div className="minute-hand clock-hand absolute w-[4px] h-[100px] bg-[var(--hand-color)] -ml-[2px] rounded-[2px] shadow-[0_0_5px_rgba(0,0,0,0.3)] origin-[center_bottom] bottom-[175px] left-[175px] z-[15] will-change-transform transition-colors duration-700 ease-in-out" style={{ rotate: smoothRotate }} />
 
                         {/* Second Hand Container */}
                         <div className="second-hand-container absolute w-[2px] h-[120px] top-[55px] left-[174px] origin-[1px_120px] z-[17] will-change-transform" style={{ transform: `rotate(${secondRotation}deg)` }}>
@@ -191,12 +272,12 @@ export function WorkClock({ scrollYProgress, projects, activeIndex, colorClass, 
                         </div> */}
 
                         {/* Date */}
-                        <div className="clock-date absolute text-[12px] font-normal text-[rgba(50,50,50,0.8)] text-center w-[140px] h-auto leading-none bottom-[115px] left-[105px] z-[15] select-none pointer-events-none">
+                        <div className="clock-date absolute text-[12px] font-normal text-[var(--hour-number-color)] text-center w-[140px] h-auto leading-none bottom-[115px] left-[105px] z-[15] select-none pointer-events-none transition-colors duration-700 ease-in-out">
                             {time && `${time.toLocaleString('default', { month: 'short' })} ${time.getDate()}`}
                         </div>
 
                         {/* Timezone */}
-                        <div className="clock-timezone absolute text-[12px] font-normal text-[rgba(50,50,50,0.8)] text-center w-[140px] h-auto leading-none bottom-[100px] left-[105px] z-[15] select-none pointer-events-none">
+                        <div className="clock-timezone absolute text-[12px] font-normal text-[var(--hour-number-color)] text-center w-[140px] h-auto leading-none bottom-[100px] left-[105px] z-[15] select-none pointer-events-none transition-colors duration-700 ease-in-out">
                             GMT
                         </div>
 
