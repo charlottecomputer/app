@@ -30,8 +30,8 @@ export function SiteHeader({
   const { toggleSidebar } = useSidebar()
 
   return (
-    <header className="bg-sidebar sticky top-0 z-50 flex w-full items-center border-b">
-      <div className="flex h-[40px] w-full items-center gap-3 px-4">
+    <header className="bg-sidebar  sticky top-0 z-50 flex w-full items-center ">
+      <div className="flex h-[40px] w-full items-center gap-3 px-2">
 
         {/* Left: Logo and App Name */}
         <div className="flex items-center gap-3">
@@ -60,7 +60,7 @@ export function SiteHeader({
 
             >
               {/* @ts-ignore */}
-              <SidebarIcon className="h-5 w-5" />
+              {/* <SidebarIcon className="h-5 w-5" /> */}
             </Button>
           )}
         </div>
@@ -74,7 +74,7 @@ export function SiteHeader({
 
         {/* Right: Sidebar toggle (mobile) and User menu */}
         <div className="flex items-center gap-2 ml-auto">
-          <SidebarTrigger side="right" />
+          {/* <SidebarTrigger side="right" /> */}
           <AppLauncher />
           <NavUser user={user} />
         </div>

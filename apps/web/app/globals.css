@@ -298,24 +298,7 @@
   to { opacity: 1; transform: none; }
 }
 
-/* Utilities */
-.layout-fh {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  height: 100svh;
-  justify-content: center;
-  min-height: 100svh;
-  padding: 4.2666666667vw;
-  position: relative;
-  width: 100svw;
-}
-@media (min-width: 800px) {
-  .layout-fh {
-    min-height: 600px;
-    padding: 2.2222222222vw;
-  }
-}
+
 
 .layout-grid {
   display: grid;
@@ -326,7 +309,6 @@
   max-width: var(--layout-width);
   width: 100%;
 }
-
 
 
 
@@ -682,4 +664,40 @@ main.front-page > section:not(:last-child) {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
+}
+
+.liquid-glass {
+    /* Base properties */
+    position: relative;
+    backdrop-filter: blur(20px);
+    border-radius: 34px;
+    
+    /* Light Mode Default */
+    background: linear-gradient(0deg, rgba(250, 250, 250, 0.3), rgba(250, 250, 250, 0.3)), rgba(52, 52, 52, 0.3);
+    background-blend-mode: normal, color-dodge;
+    
+    /* Lip/Highlight Effect (approximated from "Blur" layer) */
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+                0 8px 32px 0 rgba(31, 38, 135, 0.37); /* Keeping the drop shadow from before as it looks good */
+}
+
+/* Dark Mode Override */
+:root:has(.dark) .liquid-glass {
+    /* Dark Mode Background */
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), 
+                linear-gradient(0deg, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), 
+                #CCCCCC;
+    background-blend-mode: normal, normal, color-burn;
+    opacity: 1; /* Reset opacity if needed, but the design had 0.67. Let's try to handle it carefully. */
+    
+    /* The design specified opacity: 0.67 for the Fill layer. 
+       Applying opacity to the whole element fades content. 
+       We'll rely on the alpha channels in the gradients/colors above or just leave it opaque for readability. 
+       If we strictly follow opacity: 0.67, text inside will be transparent. 
+       Let's assume the user wants the *glass* to look like that, so we might need a pseudo-element if we want strict adherence, 
+       but for a single class on a container, we'll stick to background. */
+       
+    /* Lip/Highlight for Dark Mode */
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+                0 8px 32px 0 rgba(0, 0, 0, 0.5);
 }

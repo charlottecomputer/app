@@ -71,19 +71,19 @@ export default function WorkPage() {
     })
 
     return (
-        <div ref={containerRef} className="relative h-[2000vh]">
+        <div ref={containerRef} className=" text-foreground relative h-[2000vh]">
             <div className="sticky top-0 h-screen overflow-hidden">
                 {/* Dynamic Background Layer */}
                 <div
                     className="absolute inset-0 z-0 transition-colors duration-700 ease-in-out"
-                    style={{ backgroundColor: projects[activeIndex]?.bg || '#f7f7f7' }}
+                // style={{ backgroundColor: projects[activeIndex]?.bg || '#f7f7f7' }}
                 />
 
                 <WorkClock scrollYProgress={scrollYProgress} projects={projects} activeIndex={activeIndex} rotations={1} useScrollTime={true} />
                 <WorkList projects={projects} activeIndex={activeIndex} />
 
                 {/* Counter */}
-                <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12 z-50 mix-blend-difference text-white font-mono text-sm">
+                <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12 z-50 mix-blend-difference text-foreground font-mono text-sm">
                     <span className="text-xl md:text-2xl font-bold block">
                         {String(activeIndex + 1).padStart(2, '0')}
                     </span>

@@ -7,18 +7,11 @@ import { Text } from "../../../packages/@aliveui/ui/text"
 import { useScrollContainer } from "../../../packages/@aliveui"
 
 const words = [
-    "Todo Lists",
-    "Mindfulness",
-    "Cybersecurity",
-    "Glucose Tracking",
-    "Blood Pressure",
-    "Spam Call Blocking",
-    "Group Texting",
-    "Reading",
-    "Menu Bars",
-    "Meditation",
-    "Consumer Software",
-    "Mobile Apps",
+    "Productivity",
+    "Accomplishment",
+    "Efficiency",
+    "Masterfulness",
+    "Effortlessness"
 ]
 
 export function Hero() {
@@ -83,7 +76,8 @@ export function Hero() {
     }, [scrollContainerRef])
 
     return (
-        <section className="layout-fh relative overflow-hidden">
+
+        <section className=" relative   align-items-center justify-center flex flex-col h-[calc(100vh-50px)] w-[100svw] ">
             <div className="absolute inset-0 z-0">
                 <video
                     autoPlay
@@ -97,7 +91,7 @@ export function Hero() {
                 <div className="absolute inset-0  backdrop-blur-[0.5px]" />
             </div>
             <div className="mx-auto relative z-10">
-                <Card className="w-[80vw] opacity-80 backdrop-blur-[1px]">
+                <Card className="w-[80vw] liquid-glass">
                     <Text
                         variant="h1"
                         className="flex flex-col  justify-center items-center text-center relative select-none leading-[1.01]"
@@ -105,14 +99,14 @@ export function Hero() {
                         aria-label={`Reinventing ${words.join(", ")}`}
                     >
                         <div className="relative z-10">
-                            <div className="word-top relative w-full">
+                            <div className="word-top text-white relative w-full">
                                 <motion.div
                                     className=" relative whitespace-nowrap w-full"
                                     initial={{ y: "100%" }}
                                     animate={{ y: 0 }}
                                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                                 >
-                                    Reinventing
+                                    Minimal tools for
                                 </motion.div>
                             </div>
                         </div>
@@ -123,7 +117,7 @@ export function Hero() {
                                 WebkitMaskImage: "linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent)"
                             }}
                         >
-                            <div className="word-bottom relative w-full text-muted-foreground h-[17.0666666667vw] md:h-[8.6111111111vw]">
+                            <div className="word-bottom relative w-full text-blue-200 h-[17.0666666667vw] md:h-[8.6111111111vw]">
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={currentIndex}

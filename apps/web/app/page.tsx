@@ -6,7 +6,7 @@ import WorkPage from "./work/page"
 
 export default function Home() {
   return (
-    <main className="front-page !bg-background !text-foreground">
+    <main className=" rounded-[45px] !bg-background !text-foreground">
       <Hero />
       <Blurb />
 

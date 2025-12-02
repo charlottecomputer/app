@@ -31,7 +31,7 @@ export function WorkList({ projects, activeIndex }: WorkListProps) {
                                 transition={{ duration: 0.2 }}
                             // className="absolute inset-0 flex items-center"
                             >
-                                <h2 className="font-serif !text-black text-6xl md:text-8xl leading-none whitespace-nowrap">
+                                <h2 className="  text-6xl md:text-8xl leading-none whitespace-nowrap">
                                     {project.title}
                                 </h2 >
                             </motion.div>

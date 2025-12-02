@@ -52,6 +52,7 @@ export function Blurb() {
     const text = `Your daily life revolves around `
     const text2 = `Get a suite`
     const text3 = ` and your hectic life.`
+    const text4 = `minimally made to blend seamlessly into your everyday.`
 
     // Calculate total characters for scroll range
     const totalChars = text.length + text2.length + text3.length
@@ -88,6 +89,7 @@ export function Blurb() {
     const words1 = text.split(" ")
     const words2 = text2.split(" ")
     const words3 = text3.split(" ")
+    const words4 = text4.split(" ")
 
     let charCounter = 0
 
@@ -195,11 +197,28 @@ export function Blurb() {
                                     <span className="home-blurb-item" style={{ opacity: 1, display: 'inline-block' }}>
                                         <span className="home-blurb-item__content">
                                             <span className="home-blurb-item__content--text">
-                                                <span>no tutorial needed.</span>
+                                                <span>beautifully</span>
                                             </span>
                                         </span>
                                     </span>
-                                    {" "}
+                                    {words4.map((word, i) => {
+                                        const startIdx = charCounter
+                                        charCounter += word.length
+                                        const element = (
+                                            <>
+                                                <Word
+                                                    key={i}
+                                                    word={word}
+                                                    startIndex={startIdx}
+                                                    currentCharIndex={currentCharIndex}
+                                                    totalChars={totalChars}
+                                                />
+                                                {i < words4.length - 1 && " "}
+                                            </>
+                                        )
+                                        charCounter += 1 // space
+                                        return element
+                                    })}
                                 </p>
                             </div>
                         </h4>
