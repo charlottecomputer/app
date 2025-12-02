@@ -11,7 +11,7 @@ export default function Home() {
       <Blurb />
 
       <WorkPage />
-      <Portfolio />
+
       <Footer />
     </main>
   )

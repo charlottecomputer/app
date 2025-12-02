@@ -22,12 +22,21 @@ export function Footer() {
                             <Button>Submit</Button>
 
                         </Card>
-                        <h2 className="h1" style={{ fontSize: "12vw", lineHeight: 0.9 }}>
+
+                        <div className="flex flex-wrap justify-center gap-4 mt-8">
+                            <Button>Primary</Button>
+                            <Button variant="secondary">Secondary</Button>
+                            <Button variant="accent">Accent</Button>
+                            <Button variant="destructive">Destructive</Button>
+                            <Button disabled>Disabled</Button>
+                            <Button variant="secondary" disabled>Disabled Sec</Button>
+                        </div>
+                        {/* <h2 className="h1" style={{ fontSize: "12vw", lineHeight: 0.9 }}>
                             charlotte.computer
                         </h2>
                         <p className="b-small" style={{ marginTop: "var(--spacer-md)", opacity: 0.6 }}>
                             The apps you need, minimal for use
-                        </p>
+                        </p> */}
                     </motion.div>
 
                     <motion.div

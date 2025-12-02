@@ -34,8 +34,8 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
 
-  console.log('user',user)
-  if(!user) return null
+  console.log('user', user)
+  if (!user) return null
 
   // if (!user) {
   //   return (
@@ -58,9 +58,9 @@ export function NavUser({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
+          className="rounded-full"
           variant="ghost"
           size="icon"
-          className="rounded-full"
         >
           <Avatar className="h-8 w-8">
             <AvatarImage src={user.avatar} alt={user.name} />
