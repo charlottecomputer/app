@@ -13,7 +13,7 @@
     "next-env.d.ts",
     "next.config.js",
     ".next/types/**/*.ts"
-  ],
+, "../../packages/@aliveui/pages/site/nav-main.tsx"  ],
   "exclude": [
     "node_modules"
   ]

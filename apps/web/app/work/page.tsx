@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react"
 import { useScroll, useMotionValueEvent } from "motion/react"
-import { Navigation } from "@aliveui"
+import { Navigation, useScrollContainer } from "@aliveui"
 import { WorkClock } from "../../components/work-clock"
 import { WorkList } from "../../components/work-list"
 
@@ -34,9 +34,12 @@ const projects: Project[] = [
 
 export default function WorkPage() {
     const containerRef = useRef<HTMLDivElement>(null)
+    const { scrollContainerRef } = useScrollContainer()
+
     // Increase scroll distance to allow for more rotations if needed
     const { scrollYProgress } = useScroll({
         target: containerRef,
+        container: scrollContainerRef,
         offset: ["start start", "end end"]
     })
 
@@ -57,7 +60,7 @@ export default function WorkPage() {
 
         let newActiveIndex = 0
         for (let i = 0; i < projects.length; i++) {
-            if (currentHour >= projects[i].time - 0.5) { // Buffer of 30 mins
+            if (projects[i] && currentHour >= projects[i].time - 0.5) { // Buffer of 30 mins
                 newActiveIndex = i
             }
         }

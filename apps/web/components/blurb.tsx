@@ -41,7 +41,10 @@ function Word({ word, startIndex, currentCharIndex, totalChars }: WordProps) {
     )
 }
 
+import { useScrollContainer } from "../../../packages/@aliveui"
+
 export function Blurb() {
+    const { scrollContainerRef } = useScrollContainer()
     const [scrollProgress, setScrollProgress] = useState(0)
     const containerRef = useRef<HTMLDivElement>(null)
     const stickyRef = useRef<HTMLDivElement>(null)
@@ -60,33 +63,25 @@ export function Blurb() {
             const sticky = stickyRef.current
             if (!container || !sticky) return
 
-            const containerRect = container.getBoundingClientRect()
-            const stickyRect = sticky.getBoundingClientRect()
-
-            // Calculate progress based on how far the container has scrolled past the sticky element
-            // When container top hits the top of the viewport (or offset), progress starts
-            // When container bottom hits the bottom of the sticky element, progress ends
+            // const containerRect = container.getBoundingClientRect()
+            // const stickyRect = sticky.getBoundingClientRect()
 
             const startY = container.offsetTop
-            const endY = startY + scrollRange
-            const scrollY = window.scrollY
+            // const endY = startY + scrollRange
 
-            // We want the animation to happen while the element is sticky
-            // The element becomes sticky when scrollY >= startY - topOffset
-            // And stops being sticky when scrollY >= endY - windowHeight + bottomOffset
-
-            // Simplified: map the scroll position within the container's height to 0-1
-            // We add some buffer so it starts/ends smoothly
+            const scrollContainer = scrollContainerRef.current || window
+            const scrollY = scrollContainer instanceof Window ? scrollContainer.scrollY : (scrollContainer as HTMLElement).scrollTop
 
             const progress = Math.min(1, Math.max(0, (scrollY - startY + window.innerHeight * 0.5) / scrollRange))
 
             setScrollProgress(progress)
         }
 
-        window.addEventListener("scroll", handleScroll)
+        const scrollContainer = scrollContainerRef.current || window
+        scrollContainer.addEventListener("scroll", handleScroll)
         handleScroll() // Initial call
-        return () => window.removeEventListener("scroll", handleScroll)
-    }, [scrollRange])
+        return () => scrollContainer.removeEventListener("scroll", handleScroll)
+    }, [scrollRange, scrollContainerRef])
 
     const currentCharIndex = Math.floor(scrollProgress * totalChars)
 

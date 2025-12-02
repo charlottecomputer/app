@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { Card } from "../../../packages/@aliveui/ui/card"
 import { Text } from "../../../packages/@aliveui/ui/text"
+import { useScrollContainer } from "../../../packages/@aliveui"
 
 const words = [
     "Todo Lists",
@@ -21,6 +22,7 @@ const words = [
 ]
 
 export function Hero() {
+    const { scrollContainerRef } = useScrollContainer()
     const [currentIndex, setCurrentIndex] = useState(0)
     const [isScrolling, setIsScrolling] = useState(false)
     const lastScrollY = useRef(0)
@@ -33,12 +35,13 @@ export function Hero() {
             setCurrentIndex((prev) => (prev + 1) % words.length)
         }, 3000)
 
-        // Track scroll position via RAF since Lenis updates on animation frame
+        // Track scroll position via RAF
         let lastScrollY = 0
         let scrollAccumulator = 0
 
         const handleRAF = () => {
-            const scrollY = window.scrollY
+            const container = scrollContainerRef.current || window
+            const scrollY = container instanceof Window ? container.scrollY : (container as HTMLElement).scrollTop
             const scrollDelta = Math.abs(scrollY - lastScrollY)
 
             if (scrollDelta > 0) {
@@ -77,22 +80,34 @@ export function Hero() {
                 clearTimeout(scrollTimeoutRef.current)
             }
         }
-    }, [])
+    }, [scrollContainerRef])
 
     return (
-        <section className="layout-fh">
-            <div className="home-hero__content">
-                <Card>
+        <section className="layout-fh relative overflow-hidden">
+            <div className="absolute inset-0 z-0">
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover opacity-80"
+                >
+                    <source src="/gif.mp4" type="video/mp4" />
+                </video>
+                <div className="absolute inset-0  backdrop-blur-[0.5px]" />
+            </div>
+            <div className="mx-auto relative z-10">
+                <Card className="w-[80vw] opacity-80 backdrop-blur-[1px]">
                     <Text
                         variant="h1"
-                        className="flex flex-col justify-center items-center text-center relative select-none leading-[1.01]"
+                        className="flex flex-col  justify-center items-center text-center relative select-none leading-[1.01]"
                         style={{ opacity: 1 }}
                         aria-label={`Reinventing ${words.join(", ")}`}
                     >
                         <div className="relative z-10">
-                            <div className="word-top relative w-[100vw]">
+                            <div className="word-top relative w-full">
                                 <motion.div
-                                    className="overflow-hidden relative whitespace-nowrap w-full"
+                                    className=" relative whitespace-nowrap w-full"
                                     initial={{ y: "100%" }}
                                     animate={{ y: 0 }}
                                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -108,7 +123,7 @@ export function Hero() {
                                 WebkitMaskImage: "linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent)"
                             }}
                         >
-                            <div className="word-bottom relative w-[100vw] text-[var(--grey-300)] h-[17.0666666667vw] md:h-[8.6111111111vw]">
+                            <div className="word-bottom relative w-full text-muted-foreground h-[17.0666666667vw] md:h-[8.6111111111vw]">
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={currentIndex}

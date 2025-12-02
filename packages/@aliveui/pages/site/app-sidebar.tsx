@@ -1,9 +1,5 @@
-"use client"
-
-import { AppShell, Navigation } from "@aliveui";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@aliveui"
-import { AppSidebar } from "@aliveui/pages/site/app-sidebar";
-import { type IconName } from "@aliveui"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, Icon, IconName } from "@aliveui/ui";
+import { NavMain } from "./nav-main";
 
 export const sidebarData: {
     user: {
@@ -60,28 +56,39 @@ export const sidebarData: {
         },
     ],
 }
-
-
-
-
-
-
-export function AppSidebarWrapper() {
-    return <AppSidebar navMain={sidebarData.navMain} />
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+    navMain?: {
+        title: string
+        url: string
+        icon: IconName
+        isActive?: boolean
+        items?: {
+            title: string
+            url: string
+        }[]
+    }[]
+    user?: {
+        name: string
+        email: string
+        avatar: string
+    }
 }
-
-
-export function ClientLayout({ children }: { children: React.ReactNode }) {
+export function AppSidebar({ navMain, user, ...props }: AppSidebarProps) {
 
     return (
-        <AppShell
-            user={sidebarData.user}
-            sidebar={false}
-            collapsible="offcanvas"
-            backgroundAnimated={true}
+        <Sidebar
+            className="max-h-[calc(100vh-100px)] my-auto"
+            {...props}
         >
-            {/* <Navigation /> */}
-            {children}
-        </AppShell>
-    );
+            <SidebarHeader>
+
+            </SidebarHeader>
+            <SidebarContent>
+                <NavMain items={navMain || []} />
+            </SidebarContent>
+            <SidebarFooter>
+
+            </SidebarFooter>
+        </Sidebar>
+    )
 }

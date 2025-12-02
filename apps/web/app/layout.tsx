@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, JetBrains_Mono, EB_Garamond } from "next/font/google";
 import "./globals.css";
-import { SmoothScroll } from "../components/smooth-scroll";
+
 
 
 
@@ -20,12 +20,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-sans">
-        <SmoothScroll>
-          <ClientLayout>
-            {children}
-          </ClientLayout>
-        </SmoothScroll>
+      <body className="font-sans max-h-screen">
+        <ClientLayout>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );
