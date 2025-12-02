@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { Card } from "../../../packages/@aliveui/ui/card"
 import { useScrollContainer } from "../../../packages/@aliveui"
 import { MacOSDock, Text } from "@aliveui"
+import { mockapps } from "@aliveui/lib/apps"
 
 const apps = [
     {
@@ -199,7 +200,7 @@ export function Hero() {
                 <div className="pb-8">
 
                     <MacOSDock
-                        apps={apps}
+                        apps={mockapps}
                         onAppClick={handleAppClick}
                         openApps={openApps}
                     />

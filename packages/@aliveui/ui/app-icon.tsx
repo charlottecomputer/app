@@ -8,29 +8,45 @@ interface AppIconProps {
   icon: IconName
   label: string
   active?: boolean
-  color?: "chart-1" | "chart-2" | "chart-3" | "chart-4" | "chart-5"
-  size?: "md" | "lg"
+  color?: string
+  size?: "sm" | "md" | "lg" | "xl"
   className?: string
   noBackground?: boolean
 }
 
 export function AppIcon({ noBackground = false, icon, label, active, color, size = "lg", className }: AppIconProps) {
-  const iconSize = size === "lg" ? "w-20 h-20" : "w-12 h-12"
+  const iconSize = {
+    sm: "w-8 h-8",
+    md: "w-12 h-12",
+    lg: "w-20 h-20",
+    xl: "w-32 h-32",
+    full: "w-full h-full"
+  }[size]
+
   const noBackgroundIconSize = "pt-0 mt-0 "
-  const iconInnerSize = size === "lg" ? "!w-12 !h-12" : "!w-8 !h-8"
+
+  const iconInnerSize = {
+    sm: "!w-5 !h-5",
+    md: "!w-8 !h-8",
+    lg: "!w-12 !h-12",
+    xl: "!w-20 !h-20",
+    full: "!w-full !h-full"
+  }[size]
 
   return (
 
     <div
       className={cn(
         "relative flex flex-col items-center justify-center gap-1 cursor-pointer",
-        className
+        className,
+        iconSize,
+
       )}
     >
       {noBackground ? (
         <div
           className={cn(
-            // "flex items-start justify-center p-3 rounded-[3px] overflow-none  transition-transform hover:scale-105 active:scale-95",
+            "flex items-start justify-center p-3 rounded-md overflow-none  transition-transform hover:scale-105 active:scale-95",
             noBackgroundIconSize,
 
           )}
@@ -40,7 +56,7 @@ export function AppIcon({ noBackground = false, icon, label, active, color, size
       ) : (
         <div
           className={cn(
-            "flex items-center justify-center p-3 rounded-[3px] overflow-none text-white shadow-sm transition-transform hover:scale-105 active:scale-95",
+            "flex items-center justify-center p-3 rounded-md overflow-none text-white shadow-sm transition-transform hover:scale-105 active:scale-95",
             iconSize,
             color
           )}
@@ -48,7 +64,7 @@ export function AppIcon({ noBackground = false, icon, label, active, color, size
           <Icon icon={icon} className={iconInnerSize} />
         </div>
       )}
-      <span className="text-[10px] font-medium text-muted-foreground">{label}</span>
+      {label && (<span className="text-[10px] font-medium text-muted-foreground">{label}</span>)}
     </div>
   )
 }

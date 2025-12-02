@@ -21,7 +21,7 @@ export {Sidebar,
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-
+SidebarInput,
   useSidebar,
  
   SidebarTrigger,
@@ -69,3 +69,27 @@ export {Breadcrumb,
   export {Text} from "./ui/text"
   export { ScrollProvider, useScrollContainer } from "./ui/scroll-context"
   export { RevealOnScroll, type RevealOnScrollProps, type RevealOnScrollSegment } from "./components/text-effects/reveal-on-scroll"
+
+  export {ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuLabel,
+    ContextMenuSeparator,
+    ContextMenuTrigger,} from "./ui/context-menu"
+  export {Command,
+    CommandDialog,
+    CommandInput,
+    CommandList,
+    CommandEmpty,
+    CommandGroup,
+    CommandItem,
+    CommandShortcut,
+    CommandSeparator,} from "./ui/command" 
+  export {  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle} from "./ui/dialog"
+  export { Label } from "./ui/label"
+  export { AppGrid } from "./components/app-store/app-grid"
+  export { AppCommand } from "./components/app-store/app-command"

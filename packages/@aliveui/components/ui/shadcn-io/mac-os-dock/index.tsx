@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { cn } from "../../../../lib/utils"
+import { AppIcon } from '@aliveui/ui/app-icon';
 
 interface DockApp {
   id: string;
@@ -220,7 +221,7 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
     ))
     : (apps.length * (baseIconSize + baseSpacing)) - baseSpacing;
 
-  const padding = Math.max(8, baseIconSize * 0.12);
+  const padding = Math.max(8, baseIconSize * 0.2);
 
   return (
     <div
@@ -262,13 +263,17 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
                 zIndex: Math.round(scale * 10)
               }}
             >
-              <img
-                src={app.icon}
-                alt={app.name}
-                width={scaledSize}
-                height={scaledSize}
-                className="object-contain"
+              <AppIcon
+                icon={app.icon as any}
+                // label={app.name}
+                color="bg-primary"
+                // width={scaledSize}
+
+                size="full"
+
                 style={{
+                  width: `${scaledSize}px`,
+                  height: `${scaledSize}px`,
                   filter: `drop-shadow(0 ${scale > 1.2 ? Math.max(2, baseIconSize * 0.05) : Math.max(1, baseIconSize * 0.03)}px ${scale > 1.2 ? Math.max(4, baseIconSize * 0.1) : Math.max(2, baseIconSize * 0.06)}px rgba(0,0,0,${0.2 + (scale - 1) * 0.15}))`
                 }}
               />
