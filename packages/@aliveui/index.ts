@@ -68,3 +68,4 @@ export {Breadcrumb,
   AvatarImage} from "./ui/avatar"
   export {Text} from "./ui/text"
   export { ScrollProvider, useScrollContainer } from "./ui/scroll-context"
+  export { RevealOnScroll, type RevealOnScrollProps, type RevealOnScrollSegment } from "./components/text-effects/reveal-on-scroll"

@@ -175,7 +175,7 @@ export function Hero() {
                                     WebkitMaskImage: "linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent)"
                                 }}
                             >
-                                <div className="word-bottom relative w-full text-secondary h-[17.0666666667vw] md:h-[8.6111111111vw]">
+                                <div className="word-bottom relative w-full text-primary h-[17.0666666667vw] md:h-[8.6111111111vw]">
                                     <AnimatePresence mode="wait">
                                         <motion.div
                                             key={currentIndex}
