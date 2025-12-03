@@ -26,7 +26,23 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
 }) => {
   const [mouseX, setMouseX] = useState<number | null>(null);
   const [currentScales, setCurrentScales] = useState<number[]>(apps.map(() => 1));
-  const [currentPositions, setCurrentPositions] = useState<number[]>([]);
+
+  // Initialize positions synchronously to avoid flash
+  const initialConfig = typeof window === 'undefined' ? { baseIconSize: 64, maxScale: 1.6, effectWidth: 240 } : (
+    // Re-use the logic from getResponsiveConfig or just use defaults for now to match server
+    { baseIconSize: 64, maxScale: 1.6, effectWidth: 240 }
+  );
+
+  const initialBaseSpacing = Math.max(4, initialConfig.baseIconSize * 0.08);
+  const initialPositions = apps.map((_, index) => {
+    let currentX = 0;
+    for (let i = 0; i < index; i++) {
+      currentX += initialConfig.baseIconSize + initialBaseSpacing;
+    }
+    return currentX + (initialConfig.baseIconSize / 2);
+  });
+
+  const [currentPositions, setCurrentPositions] = useState<number[]>(initialPositions);
   const dockRef = useRef<HTMLDivElement>(null);
   const iconRefs = useRef<(HTMLDivElement | null)[]>([]);
   const animationFrameRef = useRef<number | undefined>(undefined);
@@ -114,10 +130,11 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
   }, [baseIconSize, baseSpacing]);
 
   useEffect(() => {
+    // Only update if config changes, as we initialized with defaults
     const initialScales = apps.map(() => minScale);
-    const initialPositions = calculatePositions(initialScales);
+    const newPositions = calculatePositions(initialScales);
     setCurrentScales(initialScales);
-    setCurrentPositions(initialPositions);
+    setCurrentPositions(newPositions);
   }, [apps, calculatePositions, minScale, config]);
 
   const animateToTarget = useCallback(() => {
@@ -233,8 +250,9 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
       clip={true}
       style={{
         width: `${contentWidth + padding * 2}px`,
-
-        padding: `${padding}px`
+        height: `${baseIconSize + padding * 2}px`,
+        padding: `${padding}px`,
+        filter: "drop-shadow(0 8px 32px rgba(31, 38, 135, 0.37))"
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -243,7 +261,8 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
         className="relative"
         style={{
           height: `${baseIconSize}px`,
-          width: '100%'
+          width: '100%',
+          top: 0
         }}
       >
         {apps.map((app, index) => {

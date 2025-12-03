@@ -93,7 +93,7 @@ export function RevealOnScroll({ segments, className }: RevealOnScrollProps) {
     return (
         <div
             ref={containerRef}
-            className={cn("relative mt-[144px] mb-[144px]", className)}
+            className={cn(className)}
             style={{
                 height: `${scrollRange}px`,
             }}
@@ -103,13 +103,13 @@ export function RevealOnScroll({ segments, className }: RevealOnScrollProps) {
                 className="h-auto w-full"
                 style={{
                     position: "sticky",
-                    top: "125px",
+                    top: "225px",
                     left: "0",
                     height: "600px",
                     zIndex: 10,
                 }}
             >
-                <div className="layout-grid">
+                <div >
                     <div className="flex col-span-4 relative select-none md:col-span-14 md:text-center layout-block">
                         <h4 className="font-[var(--font-itc)] text-[8.533vw] font-light leading-[1.12] md:text-[3.889vw]">
                             <div className="storyblok-content body">

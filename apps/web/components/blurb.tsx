@@ -4,7 +4,7 @@ import { RevealOnScroll } from "@aliveui"
 
 export function Blurb() {
     return (
-        <div className="flex flex-col justify-center w-full items-center h-full">
+        <div className="flex flex-col px-24  justify-center w-full items-center  ">
 
 
             <RevealOnScroll
