@@ -23,6 +23,7 @@ export {Sidebar,
   SidebarMenuSubItem,
 SidebarInput,
   useSidebar,
+  SidebarInset, SidebarProvider,
  
   SidebarTrigger,
 } from "./ui/sidebar"

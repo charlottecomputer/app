@@ -11,7 +11,7 @@ import {
 
 } from "../pages/site/site-footer"
 import { SiteHeader } from "../pages/site/site-header"
-import { SidebarInset, SidebarProvider } from "@aliveui/ui/sidebar"
+import { SidebarInset, SidebarProvider } from "@aliveui"
 import { AppSidebar } from "../pages/site/app-sidebar"
 import { ScrollProvider } from "../ui/scroll-context"
 import * as React from "react"

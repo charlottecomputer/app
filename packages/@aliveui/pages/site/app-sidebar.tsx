@@ -1,4 +1,4 @@
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, Icon, IconName } from "@aliveui/ui";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, Icon, IconName } from "@aliveui";
 import { NavMain } from "./nav-main";
 
 export const sidebarData: {

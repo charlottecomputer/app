@@ -8,25 +8,25 @@ import { PanelLeftIcon, PanelRightIcon } from "lucide-react"
 const PanelLeftIconAny = PanelLeftIcon as any
 const PanelRightIconAny = PanelRightIcon as any
 
-import { cn } from "@aliveui/ui"
-import { Button } from "@aliveui/ui"
-import { Input } from "@aliveui/ui"
-import { Separator } from "@aliveui/ui"
+import { cn } from "@aliveui"
+import { Button } from "@aliveui"
+import { Input } from "@aliveui"
+import { Separator } from "@aliveui"
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@aliveui/ui"
-import { Skeleton } from "@aliveui/ui"
+} from "@aliveui"
+import { Skeleton } from "@aliveui"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@aliveui/ui"
-import { useIsMobile } from "@aliveui/ui"
+} from "@aliveui"
+import { useIsMobile } from "@aliveui"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7

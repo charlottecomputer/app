@@ -1,4 +1,4 @@
-import { cn } from "@aliveui/ui"
+import { cn } from "@aliveui"
 
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   return (

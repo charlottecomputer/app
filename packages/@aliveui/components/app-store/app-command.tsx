@@ -9,7 +9,7 @@ import {
     CommandItem,
     CommandList,
     AppIcon,
-} from "@aliveui/ui"
+} from "@aliveui"
 import { mockapps } from "../../lib/apps"
 import { useRouter } from "next/navigation"
 

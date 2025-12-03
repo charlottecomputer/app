@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { cn } from "../../../../lib/utils"
-import { AppIcon } from '@aliveui/ui/app-icon';
+import { AppIcon } from '../../../../ui/app-icon';
 
 interface DockApp {
   id: string;
@@ -266,7 +266,7 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
               <AppIcon
                 icon={app.icon as any}
                 // label={app.name}
-                color="bg-primary"
+                color={app.color}
                 // width={scaledSize}
 
                 size="full"

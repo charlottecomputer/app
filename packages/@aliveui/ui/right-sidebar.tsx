@@ -8,7 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@aliveui/ui"
+} from "@aliveui"
 import { Calendar } from "lucide-react"
 // import { Message, MessageAvatar, MessageContent } from "../../ai/message"
 // import { PromptInput, PromptInputSubmit, PromptInputTextarea } from "../../ai/prompt-input"

@@ -8,7 +8,7 @@ const CheckIcon = _CheckIcon as any
 const ChevronRightIcon = _ChevronRightIcon as any
 const CircleIcon = _CircleIcon as any
 
-import { cn } from "@aliveui/ui"
+import { cn } from "@aliveui"
 
 function DropdownMenu({
   ...props

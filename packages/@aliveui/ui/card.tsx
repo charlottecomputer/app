@@ -1,4 +1,4 @@
-import { cn } from "@aliveui/ui/lib/utils"
+import { cn } from "@aliveui"
 import * as React from "react"
 
 

@@ -6,7 +6,7 @@ import { XIcon } from "lucide-react"
 
 const XIconAny = XIcon as any
 
-import { cn } from "@aliveui/ui"
+import { cn } from "@aliveui"
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />

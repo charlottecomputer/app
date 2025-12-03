@@ -8,7 +8,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@aliveui/ui"
+} from "@aliveui"
 
 export function SiteFooter() {
   const pathname = usePathname()

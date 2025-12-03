@@ -6,8 +6,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
   Icon,
-} from "@aliveui/ui"
-import { AppIcon } from "@aliveui/ui"
+} from "@aliveui"
+import { AppIcon } from "@aliveui"
 import { GridIcon } from "lucide-react"
 import { mockapps } from "../../lib/apps"
 

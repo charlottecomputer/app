@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   useSidebar,
-} from "@aliveui/ui"
+} from "@aliveui"
 
 export function NavUser({
   user,

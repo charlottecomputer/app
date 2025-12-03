@@ -13,10 +13,10 @@ import {
   Text,
   SidebarTrigger,
   Input,
-} from "@aliveui/ui"
+} from "@aliveui"
 import { AppLauncher } from "./app-launcher"
 import { NavUser } from "./nav-user"
-import { Icon, type IconName } from "@aliveui/ui/icon"
+import { Icon, type IconName } from "@aliveui"
 import { AppCommand } from "../../components/app-store/app-command"
 import React from "react"
 import Link from "next/link"

@@ -1,7 +1,7 @@
 "use client"
 
 import { ChevronRight } from "lucide-react"
-import { Icon, type IconName } from "@aliveui/ui/icon"
+import { Icon, type IconName } from "@aliveui"
 import Link from "next/link"
 
 import {
@@ -17,7 +17,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@aliveui/ui"
+} from "@aliveui"
 
 export function NavMain({
   items,
