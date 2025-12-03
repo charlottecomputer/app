@@ -3,6 +3,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { cn } from "../../../../lib/utils"
 import { AppIcon } from '../../../../ui/app-icon';
+import { Monoco } from "@monokai/monoco-react"
 
 interface DockApp {
   id: string;
@@ -224,9 +225,12 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
   const padding = Math.max(8, baseIconSize * 0.2);
 
   return (
-    <div
+    <Monoco
       ref={dockRef}
       className={cn(' liquid-glass', className)}
+      borderRadius={24}
+      smoothing={1}
+      clip={true}
       style={{
         width: `${contentWidth + padding * 2}px`,
 
@@ -270,6 +274,7 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
                 // width={scaledSize}
 
                 size="full"
+                borderRadius={scaledSize * 0.225}
 
                 style={{
                   width: `${scaledSize}px`,
@@ -297,7 +302,7 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
           );
         })}
       </div>
-    </div>
+    </Monoco>
   );
 };
 

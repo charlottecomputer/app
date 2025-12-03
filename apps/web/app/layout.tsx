@@ -22,6 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans max-h-screen">
         <ClientLayout>
+
           {children}
         </ClientLayout>
       </body>

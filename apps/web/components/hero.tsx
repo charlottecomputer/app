@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { Card } from "../../../packages/@aliveui/ui/card"
 import { useScrollContainer } from "../../../packages/@aliveui"
-import { MacOSDock, Text } from "@aliveui"
+import { MacOSDock, Text, EtheralShadow } from "@aliveui"
 import { mockapps } from "@aliveui/lib/apps"
 
 const apps = [
@@ -137,65 +137,63 @@ export function Hero() {
 
         <section className=" relative   align-items-center justify-center flex flex-col h-[calc(100vh-50px)] w-[100svw] ">
             <div className="absolute inset-0 z-0">
-                <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover opacity-80"
-                >
-                    <source src="/gif.mp4" type="video/mp4" />
-                </video>
+                {/* <EtheralShadow
+                    color="linear-gradient(to bottom right, var(--chart-1), var(--chart-2), var(--chart-3), var(--chart-4), var(--chart-5))"
+                    animation={{
+                        scale: 50,
+                        speed: 20
+                    }}
+                    className="opacity-80"
+                /> */}
                 <div className="absolute inset-0  backdrop-blur-[0.5px]" />
             </div>
             <div className="mx-auto h-full justify-between items-center space-between flex flex-col   relative z-10">
                 <div className="flex flex-col justify-center items-center h-full">
-                    <Card className="w-[80vw] liquid-glass">
-                        <Text
-                            variant="h1"
-                            className="flex flex-col  justify-center items-center text-center relative select-none leading-[1.01]"
-                            style={{ opacity: 1 }}
-                            aria-label={`Reinventing ${words.join(", ")}`}
+                    <Text
+                        variant="ultralight"
+                        size="9xl"
+                        className="flex flex-col  justify-center items-center text-center relative select-none leading-[1.01]"
+                        style={{ opacity: 1 }}
+                        aria-label={`Reinventing ${words.join(", ")}`}
+                    >
+                        <div className="relative z-10">
+                            <div className="word-top  relative w-full">
+                                <motion.div
+                                    className=" relative whitespace-nowrap w-full"
+                                    initial={{ y: "100%" }}
+                                    animate={{ y: 0 }}
+                                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                                >
+                                    Minimal tools for
+                                </motion.div>
+                            </div>
+                        </div>
+                        <div
+                            className="relative"
+                            style={{
+                                maskImage: "linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent)",
+                                WebkitMaskImage: "linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent)"
+                            }}
                         >
-                            <div className="relative z-10">
-                                <div className="word-top text-white relative w-full">
+                            <div className="word-bottom relative w-full text-primary h-[17.0666666667vw] md:h-[8.6111111111vw]">
+                                <AnimatePresence mode="wait">
                                     <motion.div
-                                        className=" relative whitespace-nowrap w-full"
+                                        key={currentIndex}
+                                        className="absolute w-full overflow-hidden relative whitespace-nowrap"
                                         initial={{ y: "100%" }}
                                         animate={{ y: 0 }}
-                                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                                        exit={{ y: 0 }}
+                                        transition={{
+                                            duration: isScrolling ? 0 : 0.2,
+                                            ease: [0.16, 1, 0.3, 1]
+                                        }}
                                     >
-                                        Minimal tools for
+                                        <span>{words[currentIndex]}</span>
                                     </motion.div>
-                                </div>
+                                </AnimatePresence>
                             </div>
-                            <div
-                                className="relative"
-                                style={{
-                                    maskImage: "linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent)",
-                                    WebkitMaskImage: "linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent)"
-                                }}
-                            >
-                                <div className="word-bottom relative w-full text-primary h-[17.0666666667vw] md:h-[8.6111111111vw]">
-                                    <AnimatePresence mode="wait">
-                                        <motion.div
-                                            key={currentIndex}
-                                            className="absolute w-full overflow-hidden relative whitespace-nowrap"
-                                            initial={{ y: "100%" }}
-                                            animate={{ y: 0 }}
-                                            exit={{ y: 0 }}
-                                            transition={{
-                                                duration: isScrolling ? 0 : 0.2,
-                                                ease: [0.16, 1, 0.3, 1]
-                                            }}
-                                        >
-                                            <span>{words[currentIndex]}</span>
-                                        </motion.div>
-                                    </AnimatePresence>
-                                </div>
-                            </div>
-                        </Text>
-                    </Card>
+                        </div>
+                    </Text>
                 </div>
                 <div className="pb-8">
 

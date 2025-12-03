@@ -94,3 +94,4 @@ export {Breadcrumb,
   export { Label } from "./ui/label"
   export { AppGrid } from "./components/app-store/app-grid"
   export { AppCommand } from "./components/app-store/app-command"
+  export { EtheralShadow } from "./styles/backgrounds/etherial-shadow"

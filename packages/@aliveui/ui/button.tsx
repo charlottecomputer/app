@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
+import { Monoco } from "@monokai/monoco-react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../lib/utils"
@@ -8,7 +9,7 @@ import { motion } from "motion/react"
 import { Text } from "./text"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[5px] transition-all disabled:pointer-events-none disabled:bg-white/50 disabled:text-black/25 disabled:shadow-[var(--shadow-button-disabled)] [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all disabled:pointer-events-none disabled:bg-white/50 disabled:text-black/25 disabled:shadow-[var(--shadow-button-disabled)] [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
@@ -64,13 +65,20 @@ function Button({
       transition={{ type: "spring", stiffness: 1000, damping: 20 }}
       {...(props as any)}
     >
-      {asChild ? (
-        children
-      ) : (
-        <Text variant="regular" className="text-[13px] leading-[16px]">
-          {children}
-        </Text>
-      )}
+      <Monoco
+        borderRadius={8} // Should be dynamic based on size?
+        smoothing={1}
+        clip={true}
+        className="w-full h-full flex items-center justify-center gap-2"
+      >
+        {asChild ? (
+          children
+        ) : (
+          <Text variant="regular" className="text-[13px] leading-[16px]">
+            {children}
+          </Text>
+        )}
+      </Monoco>
     </Comp>
   )
 }

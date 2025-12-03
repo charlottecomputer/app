@@ -80,6 +80,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             collapsible="offcanvas"
             backgroundAnimated={true}
         >
+
             {/* <Navigation /> */}
             {children}
         </AppShell>
