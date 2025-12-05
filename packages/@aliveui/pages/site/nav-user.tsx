@@ -106,3 +106,5 @@ export function NavUser({
     </DropdownMenu>
   )
 }
+
+export default NavUser;

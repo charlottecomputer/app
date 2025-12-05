@@ -9,12 +9,15 @@ export function Blurb() {
 
             <RevealOnScroll
                 segments={[
-                    { type: 'text', content: "Your daily life revolves around " },
-                    { type: 'label', content: "apps" },
-                    { type: 'text', content: " that actually fit you " },
-                    { type: 'label', content: "beautifully" },
-                    { type: 'text', content: " and your hectic life." },
-                    { type: 'text', content: " Get a suite minimally made to blend seamlessly into your everyday." }
+                    { type: 'text', content: "Start with your own " },
+                    { type: 'label', content: "personal OS" },
+                    { type: 'text', content: ". Curate from a " },
+                    { type: 'label', content: "catalogue of 1000s" },
+                    { type: 'text', content: " of apps. Make it completely yours with " },
+                    { type: 'label', content: "unified themes" },
+                    { type: 'text', content: ". Minimalistic apps for every job to be done: Todos, Calendar, Projects, Documents. " },
+                    { type: 'label', content: "Super minimal" },
+                    { type: 'text', content: "." }
                 ]}
             />
         </div>

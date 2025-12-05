@@ -57,3 +57,5 @@ export function AppLauncher({ apps = mockapps }: AppLauncherProps) {
     </DropdownMenu>
   )
 }
+
+export default AppLauncher;

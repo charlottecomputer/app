@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from "react"
 import { cn } from "../../lib/utils"
 import { useScrollContainer } from "../../ui/scroll-context"
+import { Badge } from '@aliveui'
 
 interface CharProps {
     char: string
@@ -111,27 +112,15 @@ export function RevealOnScroll({ segments, className }: RevealOnScrollProps) {
             >
                 <div >
                     <div className="flex col-span-4 relative select-none md:col-span-14 md:text-center layout-block">
-                        <h4 className="font-[var(--font-itc)] text-[8.533vw] font-light leading-[1.12] md:text-[3.889vw]">
+                        <h4 className=" text-[8.533vw] font-light leading-[1.] md:text-[3.889vw]">
                             <div className="storyblok-content body">
                                 <p>
                                     {segments.map((segment, segmentIndex) => {
                                         if (segment.type === 'label') {
                                             return (
-                                                <span
-                                                    key={segmentIndex}
-                                                    className={cn(
-                                                        "mr-[1.5vw] opacity-25 overflow-hidden relative whitespace-nowrap h-min",
-                                                        "md:border md:border-grey-100 md:rounded-[14.3px] md:mr-[0.5vw] md:w-min md:h-min md:inline md:py-[0.3vw] md:px-[0.65vw]",
-                                                        segment.className
-                                                    )}
-                                                    style={{ opacity: 1, display: 'inline-block' }}
-                                                >
-                                                    <span className="text-[var(--theme-contrast)] pointer-events-none">
-                                                        <span className="home-blurb-item__content--text">
-                                                            <span>{segment.content}</span>
-                                                        </span>
-                                                    </span>
-                                                </span>
+
+                                                <Badge key={segmentIndex} variant="secondary" className="text-[8.533vw] font-light  md:text-[3.889vw] !px-4">{segment.content}</Badge>
+
                                             )
                                         }
 

@@ -92,3 +92,5 @@ export function AppSidebar({ navMain, user, ...props }: AppSidebarProps) {
         </Sidebar>
     )
 }
+
+export default AppSidebar;

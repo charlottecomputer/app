@@ -136,17 +136,7 @@ export function Hero() {
     return (
 
         <section className=" relative   align-items-center justify-center flex flex-col h-[calc(100vh-50px)] w-[100svw] ">
-            <div className="absolute inset-0 z-0">
-                {/* <EtheralShadow
-                    color="linear-gradient(to bottom right, var(--chart-1), var(--chart-2), var(--chart-3), var(--chart-4), var(--chart-5))"
-                    animation={{
-                        scale: 50,
-                        speed: 20
-                    }}
-                    className="opacity-80"
-                /> */}
-                <div className="absolute inset-0  backdrop-blur-[0.5px]" />
-            </div>
+
             <div className="mx-auto h-full justify-between items-center space-between flex flex-col   relative z-10">
                 <div className="flex flex-col justify-center items-center h-full">
                     <Text
