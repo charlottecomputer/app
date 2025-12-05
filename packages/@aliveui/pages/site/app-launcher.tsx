@@ -8,7 +8,6 @@ import {
   Icon,
 } from "@aliveui"
 import { AppIcon } from "@aliveui"
-import { GridIcon } from "lucide-react"
 import { mockapps } from "../../lib/apps"
 
 interface AppLauncherProps {

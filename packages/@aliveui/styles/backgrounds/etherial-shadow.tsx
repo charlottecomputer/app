@@ -67,32 +67,32 @@ export function EtheralShadow({
     const hueRotateAnimation = useRef<AnimationPlaybackControls | null>(null);
     const displacementScale = animation ? mapRange(animation.scale, 1, 100, 1000, 10) : (staticFilter ? 110 : 0);
     const animationDuration = animation ? mapRange(animation.speed, 1, 100, 1000, 50) : 1;
-    useEffect(() => {
-        if (feColorMatrixRef.current && animationEnabled) {
-            if (hueRotateAnimation.current) {
-                hueRotateAnimation.current.stop();
-            }
-            hueRotateMotionValue.set(0);
-            hueRotateAnimation.current = animate(hueRotateMotionValue, 360, {
-                duration: animationDuration / 25,
-                repeat: Infinity,
-                repeatType: "loop",
-                repeatDelay: 0,
-                ease: "linear",
-                delay: 0,
-                onUpdate: (value: number) => {
-                    if (feColorMatrixRef.current) {
-                        feColorMatrixRef.current.setAttribute("values", String(value));
-                    }
-                }
-            });
-            return () => {
-                if (hueRotateAnimation.current) {
-                    hueRotateAnimation.current.stop();
-                }
-            };
-        }
-    }, [animationEnabled, animationDuration, hueRotateMotionValue]);
+    // useEffect(() => {
+    //     if (feColorMatrixRef.current && animationEnabled) {
+    //         if (hueRotateAnimation.current) {
+    //             hueRotateAnimation.current.stop();
+    //         }
+    //         hueRotateMotionValue.set(0);
+    //         hueRotateAnimation.current = animate(hueRotateMotionValue, 360, {
+    //             duration: animationDuration / 25,
+    //             repeat: Infinity,
+    //             repeatType: "loop",
+    //             repeatDelay: 0,
+    //             ease: "linear",
+    //             delay: 0,
+    //             onUpdate: (value: number) => {
+    //                 if (feColorMatrixRef.current) {
+    //                     feColorMatrixRef.current.setAttribute("values", String(value));
+    //                 }
+    //             }
+    //         });
+    //         return () => {
+    //             if (hueRotateAnimation.current) {
+    //                 hueRotateAnimation.current.stop();
+    //             }
+    //         };
+    //     }
+    // }, [animationEnabled, animationDuration, hueRotateMotionValue]);
     return (
         <div
             className={cn("relative  w-full h-full", className)}
@@ -106,21 +106,21 @@ export function EtheralShadow({
                 }}
             >
                 {filterEnabled && (
-                    <svg style={{ position: "absolute" }}>
+                    <svg style={{ position: "relative" }}>
                         <defs>
                             <filter id={id}>
-                                <feTurbulence
+                                {/* <feTurbulence
                                     result="undulation"
-                                    numOctaves="2"
+                                    numOctaves="1"
                                     baseFrequency={`${mapRange(animation?.scale ?? 50, 0, 100, 0.001, 0.0005)},${mapRange(animation?.scale ?? 50, 0, 100, 0.004, 0.002)}`}
                                     seed="0"
                                     type="turbulence"
-                                />
+                                /> */}
                                 <feColorMatrix
                                     ref={feColorMatrixRef}
                                     in="undulation"
                                     type="hueRotate"
-                                    values="180"
+                                    values="80"
                                 />
                                 <feColorMatrix
                                     in="dist"
