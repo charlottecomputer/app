@@ -56,7 +56,7 @@ export default function InboxPage() {
         </div>
       ) : (
         <>
-          <TodoList todos={todos} onToggle={loadTodos} />
+          <TodoList todos={todos} projects={projects} onToggle={loadTodos} />
 
           {showForm ? (
             <AddTaskForm

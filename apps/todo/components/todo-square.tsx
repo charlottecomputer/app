@@ -3,89 +3,125 @@
 import { useState, useEffect } from "react"
 import { motion, useAnimation } from "motion/react"
 import { cn } from "@aliveui"
-import { updateTodoProgress } from "@/actions/todo-actions"
+import { deleteTodo, updateTodoProgress } from "@/actions/todo-actions"
+import { Project, Todo } from "@/types/todo"
+import {
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuTrigger,
+} from "@aliveui"
+import { Pencil, Trash, Flag, Repeat } from "lucide-react"
+import { EditTaskDialog } from "./edit-task-dialog"
 
-interface TodoSquareProps {
-    todoId: string
-    content: string
-    emoji?: string
-    requiredTouches?: number
-    currentTouches?: number
-    completed: boolean
-    onClick?: () => void
+interface TodoSquareProps extends Todo {
+    projects?: Project[]
 }
 
-export function TodoSquare({
-    todoId,
-    content,
-    emoji = "📝",
-    requiredTouches = 1,
-    currentTouches = 0,
-    completed,
-    onClick
-}: TodoSquareProps) {
-    const [touches, setTouches] = useState(currentTouches)
-    const [isCompleted, setIsCompleted] = useState(completed)
-    const controls = useAnimation()
+export function TodoSquare({ projects = [], ...todo }: TodoSquareProps) {
+    const [isEditing, setIsEditing] = useState(false)
+    const requiredTouches = todo.requiredTouches || 1
+    const currentTouches = todo.currentTouches || 0
+    const progress = Math.min(currentTouches / requiredTouches, 1) * 100
 
-    useEffect(() => {
-        setTouches(currentTouches)
-        setIsCompleted(completed)
-    }, [currentTouches, completed])
+    const handleTouch = async () => {
+        if (todo.completed) return
 
-    const handleInteraction = async () => {
-        if (isCompleted) return
+        const newTouches = currentTouches + 1
 
-        const newTouches = touches + 1
-        setTouches(newTouches)
-
-        // Liquid fill animation trigger
-        controls.start({
-            scale: [1, 0.95, 1.05, 1],
-            transition: { duration: 0.3 }
-        })
-
-        if (newTouches >= requiredTouches) {
-            setIsCompleted(true)
-            await updateTodoProgress(todoId, newTouches, true)
-        } else {
-            await updateTodoProgress(todoId, newTouches, false)
+        try {
+            if (newTouches >= requiredTouches) {
+                await updateTodo({
+                    todoId: todo.todoId,
+                    completed: true,
+                    currentTouches: newTouches
+                })
+            } else {
+                await updateTodo({
+                    todoId: todo.todoId,
+                    currentTouches: newTouches
+                })
+            }
+        } catch (error) {
+            console.error("Failed to update todo:", error)
         }
-
-        if (onClick) onClick()
     }
 
-    const fillPercentage = Math.min((touches / requiredTouches) * 100, 100)
+    const getPriorityColor = (priority?: string) => {
+        switch (priority) {
+            case 'high': return 'text-red-500'
+            case 'medium': return 'text-yellow-500'
+            case 'low': return 'text-blue-500'
+            default: return 'text-muted-foreground'
+        }
+    }
 
     return (
-        <motion.button
-            animate={controls}
-            onClick={handleInteraction}
-            className={cn(
-                "relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-border bg-background transition-colors hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-ring",
-                isCompleted && "border-primary opacity-50 cursor-default"
-            )}
-        >
-            {/* Liquid Fill */}
-            <div
-                className="absolute bottom-0 left-0 w-full bg-primary/20 transition-all duration-500 ease-out"
-                style={{ height: `${fillPercentage}%` }}
+        <>
+            <ContextMenu>
+                <ContextMenuTrigger asChild>
+                    <div
+                        className={cn(
+                            "relative aspect-square rounded-3xl overflow-hidden cursor-pointer transition-transform active:scale-95 select-none w-32 h-32 sm:w-40 sm:h-40",
+                            "bg-muted/30 hover:bg-muted/50 border-2 border-transparent hover:border-primary/10",
+                            todo.completed && "opacity-50 grayscale"
+                        )}
+                        onClick={handleTouch}
+                    >
+                        {/* Liquid Fill Animation */}
+                        <div
+                            className="absolute bottom-0 left-0 right-0 bg-primary/20 transition-all duration-500 ease-out"
+                            style={{ height: `${progress}%` }}
+                        />
+
+                        <div className="relative z-10 h-full flex flex-col items-center justify-center p-4 text-center gap-2">
+                            <div className="text-3xl sm:text-4xl animate-in zoom-in duration-300">
+                                {todo.emoji || "📝"}
+                            </div>
+                            <div className="font-medium text-sm sm:text-base line-clamp-2 leading-tight">
+                                {todo.content}
+                            </div>
+                            <div className="flex gap-1 items-center justify-center">
+                                {todo.priority && (
+                                    <Flag className={`w-3 h-3 ${getPriorityColor(todo.priority)}`} />
+                                )}
+                                {todo.recurrence && (
+                                    <Repeat className="w-3 h-3 text-muted-foreground" />
+                                )}
+                            </div>
+                            {requiredTouches > 1 && (
+                                <div className="text-xs text-muted-foreground font-medium">
+                                    {currentTouches}/{requiredTouches}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </ContextMenuTrigger>
+                <ContextMenuContent>
+                    <ContextMenuItem onClick={() => setIsEditing(true)}>
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Edit Task
+                    </ContextMenuItem>
+                    <ContextMenuItem
+                        className="text-destructive focus:text-destructive"
+                        onClick={async () => {
+                            if (confirm("Are you sure you want to delete this task?")) {
+                                await deleteTodo(todo.todoId)
+                            }
+                        }}
+                    >
+                        <Trash className="mr-2 h-4 w-4" />
+                        Delete Task
+                    </ContextMenuItem>
+                </ContextMenuContent>
+            </ContextMenu>
+
+            <EditTaskDialog
+                todo={todo}
+                projects={projects}
+                open={isEditing}
+                onOpenChange={setIsEditing}
             />
-
-            {/* Content */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-2 z-10">
-                <span className="text-2xl mb-1 select-none">{emoji}</span>
-                <span className="text-xs font-medium text-center line-clamp-2 leading-tight text-foreground/80 select-none">
-                    {content}
-                </span>
-            </div>
-
-            {/* Touch Counter (if multi-touch) */}
-            {requiredTouches > 1 && !isCompleted && (
-                <div className="absolute top-1 right-2 text-[10px] text-muted-foreground font-mono">
-                    {touches}/{requiredTouches}
-                </div>
-            )}
-        </motion.button>
+        </>
     )
 }

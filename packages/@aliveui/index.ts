@@ -3,7 +3,7 @@ export * from "./hooks/use-mobile";
 export * from "./ui/scroll-reveal-text";
 export { Navigation } from "./ui/navigation";
 export { Marquee } from "./ui/marquee";
-export { Button } from "./ui/button";
+export { Button, buttonVariants } from "./ui/button";
 export { MacOSDock, type DockApp, type MacOSDockProps } from "./components/ui/shadcn-io/mac-os-dock";
 export {
   Card, CardContent, CardDescription,
@@ -68,6 +68,7 @@ export {
   BreadcrumbSeparator,
 } from "./ui/breadcrumb"
 
+export * from "./ui/calendar"
 export {
   DropdownMenu,
   DropdownMenuTrigger, DropdownMenuContent,
@@ -112,7 +113,8 @@ export {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
+  DialogFooter
 } from "./ui/dialog"
 export { Label } from "./ui/label"
 export { AppGrid } from "./components/app-store/app-grid"

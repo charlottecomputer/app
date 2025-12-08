@@ -39,7 +39,7 @@ export default async function DashboardPage() {
 
       {/* Today View */}
       <section>
-        <TodayView todos={todos} />
+        <TodayView todos={todos} projects={projects} />
       </section>
 
       {/* Projects Grid */}

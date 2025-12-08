@@ -1,15 +1,16 @@
 "use client"
 
-import { Todo } from "@/types/todo"
+import { Todo, Project } from "@/types/todo"
 import { TodoSquare } from "./todo-square"
 import { Text } from "@aliveui"
 import { format } from "date-fns"
 
 interface TodayViewProps {
     todos: Todo[]
+    projects?: Project[]
 }
 
-export function TodayView({ todos }: TodayViewProps) {
+export function TodayView({ todos, projects = [] }: TodayViewProps) {
     const today = new Date()
     const dayOfWeek = today.getDay() // 0-6
 
@@ -54,6 +55,7 @@ export function TodayView({ todos }: TodayViewProps) {
                     <TodoSquare
                         key={todo.todoId}
                         {...todo}
+                        projects={projects}
                     />
                 ))}
             </div>

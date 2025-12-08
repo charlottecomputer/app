@@ -1,61 +1,72 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { createTodo } from "@/actions/todo-actions"
-import { Button, Input, Text } from "@aliveui"
+import { Button, Input } from "@aliveui"
 import { Icon } from "@aliveui"
-import { CreateTodoInput, Project } from "@/types/todo"
+import { Flag } from "lucide-react"
+import { Project, CreateTodoInput, Recurrence, Priority } from "@/types/todo"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@aliveui"
+import { TaskDatePicker } from "./task-date-picker"
+import { TaskRecurrencePicker } from "./task-recurrence-picker"
 
 interface AddTaskFormProps {
-  onCancel?: () => void
-  onSuccess?: () => void
+  onCancel: () => void
+  onSuccess: () => void
   projects?: Project[]
   defaultProjectId?: string
 }
 
 export function AddTaskForm({ onCancel, onSuccess, projects = [], defaultProjectId }: AddTaskFormProps) {
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
+  const [content, setContent] = useState("")
   const [touches, setTouches] = useState(1)
   const [emoji, setEmoji] = useState("📝")
   const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>(defaultProjectId)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // New fields
+  const [dueDate, setDueDate] = useState<Date | undefined>()
+  const [recurrence, setRecurrence] = useState<Recurrence | undefined>()
+  const [priority, setPriority] = useState<Priority | undefined>()
+
   // Reset selected project if default changes (e.g. opening form in different context)
-  useEffect(() => {
-    if (defaultProjectId) {
-      setSelectedProjectId(defaultProjectId)
-    }
-  }, [defaultProjectId])
+  // This useEffect is removed in the new code, so I will remove it.
+  // useEffect(() => {
+  //   if (defaultProjectId) {
+  //     setSelectedProjectId(defaultProjectId)
+  //   }
+  // }, [defaultProjectId])
 
   const selectedProject = projects.find(p => p.projectId === selectedProjectId)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!title.trim()) return
+    if (!content.trim()) return
 
     setIsSubmitting(true)
     try {
       const input: CreateTodoInput = {
-        content: title,
+        content: content,
+        projectId: selectedProjectId,
         requiredTouches: touches,
         emoji: emoji,
-        projectId: selectedProjectId,
+        recurrence: recurrence,
+        dueDate: dueDate?.toISOString(),
+        priority: priority,
       }
 
       const result = await createTodo(input)
       if (result.success) {
-        setTitle("")
-        setDescription("")
-        setTouches(1)
+        setContent("")
+        // setDescription("") // Removed
+        // setTouches(1) // Removed
         // Don't reset selected project so user can add multiple tasks to same project easily
-        onSuccess?.()
+        onSuccess() // Changed from onSuccess?.()
       }
     } catch (error) {
       console.error("Failed to create todo:", error)
@@ -65,33 +76,60 @@ export function AddTaskForm({ onCancel, onSuccess, projects = [], defaultProject
   }
 
   return (
-    <form onSubmit={handleSubmit} className="border rounded-lg p-4 space-y-3 bg-card">
-      <div className="space-y-2">
-        <div className="flex gap-2">
-          <Input
-            value={emoji}
-            onChange={(e) => setEmoji(e.target.value)}
-            className="w-12 text-center text-xl border-none shadow-none px-0 focus-visible:ring-0"
-            placeholder="📝"
-          />
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Task name"
-            className="flex-1 text-base font-medium border-none shadow-none px-0 focus-visible:ring-0"
-            autoFocus
-          />
-        </div>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4 border rounded-xl bg-card shadow-sm animate-in fade-in zoom-in-95 duration-200">
+      <div className="flex gap-2">
         <Input
+          value={emoji}
+          onChange={(e) => setEmoji(e.target.value)}
+          className="w-12 text-center text-xl h-auto py-2"
+          placeholder="📝"
+        />
+        <Input
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="What needs to be done?"
+          className="flex-1 text-lg h-auto py-2"
+          autoFocus
+        />
+      </div>
+
+      {/* Description input removed */}
+      {/* <Input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Description"
           className="text-sm text-muted-foreground border-none shadow-none px-0 focus-visible:ring-0"
-        />
-      </div>
+        /> */}
 
-      <div className="flex items-center gap-2 flex-wrap">
-        <div className="flex items-center gap-1 border rounded-md px-2 py-1">
+      <div className="flex flex-wrap gap-2 items-center">
+        <TaskDatePicker date={dueDate} onDateChange={setDueDate} />
+
+        <TaskRecurrencePicker recurrence={recurrence} onRecurrenceChange={setRecurrence} />
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className={!priority ? "text-muted-foreground" : ""}>
+              <Flag className={`mr-2 h-4 w-4 ${priority === 'high' ? 'text-red-500' : priority === 'medium' ? 'text-yellow-500' : priority === 'low' ? 'text-blue-500' : ''}`} />
+              {priority ? priority.charAt(0).toUpperCase() + priority.slice(1) : "Priority"}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setPriority('high')}>
+              <Flag className="mr-2 h-4 w-4 text-red-500" /> High
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setPriority('medium')}>
+              <Flag className="mr-2 h-4 w-4 text-yellow-500" /> Medium
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setPriority('low')}>
+              <Flag className="mr-2 h-4 w-4 text-blue-500" /> Low
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setPriority(undefined)}>
+              No Priority
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div className="flex items-center gap-1 border rounded-md px-2 py-1 bg-background">
           <span className="text-xs text-muted-foreground">Touches:</span>
           <input
             type="number"
@@ -103,35 +141,25 @@ export function AddTaskForm({ onCancel, onSuccess, projects = [], defaultProject
           />
         </div>
 
-        <Button type="button" variant="outline" size="sm" className="h-7 gap-1">
-          <Icon icon="calendar" className="w-3.5 h-3.5 text-green-600" />
-          Today
-        </Button>
+        <div className="flex-1" />
 
-        <Button type="button" variant="outline" size="sm" className="h-7 gap-1">
-          <Icon icon="filter" className="w-3.5 h-3.5" />
-          Priority
-        </Button>
-      </div>
-
-      <div className="flex items-center justify-between pt-2 border-t">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button type="button" variant="ghost" size="sm" className="gap-1">
+            <Button type="button" variant="ghost" size="sm" className="h-8 gap-1">
               {selectedProject ? (
                 <>
-                  <span className="text-base">{selectedProject.emoji || "📁"}</span>
+                  <span className="text-xs">{selectedProject.emoji || "📁"}</span>
                   {selectedProject.name}
                 </>
               ) : (
                 <>
-                  <Icon icon="inbox" className="w-4 h-4" />
+                  <Icon icon="inbox" className="w-3.5 h-3.5" />
                   Inbox
                 </>
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
+          <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setSelectedProjectId(undefined)}>
               <Icon icon="inbox" className="w-4 h-4 mr-2" />
               Inbox
@@ -147,25 +175,22 @@ export function AddTaskForm({ onCancel, onSuccess, projects = [], defaultProject
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
 
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onCancel}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            size="sm"
-            disabled={!title.trim() || isSubmitting}
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            Add task
-          </Button>
-        </div>
+      <div className="flex justify-end gap-2 pt-2 border-t">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={onCancel}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          disabled={!content.trim() || isSubmitting}
+        >
+          Add Task
+        </Button>
       </div>
     </form>
   )

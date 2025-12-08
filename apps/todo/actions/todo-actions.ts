@@ -6,7 +6,7 @@ import { dynamoDb, TABLE_NAME } from "@/lib/dynamo";
 import { cognitoClient } from "@/lib/cognito";
 import { getSessionToken } from "./auth-actions";
 import { revalidatePath } from "next/cache";
-import type { Todo, Project, TodosResponse, TodoActionResponse, CreateTodoInput, CreateProjectInput } from "@/types/todo";
+import type { Todo, Project, TodosResponse, TodoActionResponse, CreateTodoInput, CreateProjectInput, UpdateTodoInput, UpdateProjectInput } from "@/types/todo";
 
 async function getCurrentUserId(): Promise<string> {
   const token = await getSessionToken();
@@ -146,6 +146,9 @@ export async function createTodo(input: CreateTodoInput): Promise<TodoActionResp
       currentTouches: 0,
       emoji: input.emoji,
       recurrence: input.recurrence,
+      dueDate: input.dueDate,
+      priority: input.priority,
+      reminders: input.reminders,
       type: 'todo'
     };
 
@@ -254,6 +257,142 @@ export async function deleteTodo(todoId: string): Promise<TodoActionResponse> {
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to delete todo"
+    };
+  }
+}
+export async function updateProject(input: UpdateProjectInput): Promise<TodoActionResponse> {
+  try {
+    if (!input.projectId) {
+      return { success: false, error: "Project ID is required" };
+    }
+
+    const userId = await getCurrentUserId();
+
+    // Build update expression dynamically
+    let updateExpression = "set updatedAt = :updatedAt";
+    const expressionAttributeValues: Record<string, any> = {
+      ":updatedAt": new Date().toISOString(),
+    };
+    const expressionAttributeNames: Record<string, string> = {};
+
+    if (input.name !== undefined) {
+      updateExpression += ", #name = :name";
+      expressionAttributeValues[":name"] = input.name.trim();
+      expressionAttributeNames["#name"] = "name"; // name is reserved keyword
+    }
+
+    if (input.emoji !== undefined) {
+      updateExpression += ", emoji = :emoji";
+      expressionAttributeValues[":emoji"] = input.emoji;
+    }
+
+    if (input.color !== undefined) {
+      updateExpression += ", color = :color";
+      expressionAttributeValues[":color"] = input.color;
+    }
+
+    const command = new UpdateCommand({
+      TableName: TABLE_NAME,
+      Key: { userId, todoId: input.projectId }, // projectId is stored in todoId field
+      UpdateExpression: updateExpression,
+      ExpressionAttributeValues: expressionAttributeValues,
+      ExpressionAttributeNames: Object.keys(expressionAttributeNames).length > 0 ? expressionAttributeNames : undefined,
+    });
+
+    await dynamoDb.send(command);
+    revalidatePath("/dashboard");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update project:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update project"
+    };
+  }
+}
+
+export async function updateTodo(input: UpdateTodoInput): Promise<TodoActionResponse> {
+  try {
+    if (!input.todoId) {
+      return { success: false, error: "Todo ID is required" };
+    }
+
+    const userId = await getCurrentUserId();
+
+    // Build update expression dynamically
+    let updateExpression = "set updatedAt = :updatedAt";
+    const expressionAttributeValues: Record<string, any> = {
+      ":updatedAt": new Date().toISOString(),
+    };
+    const expressionAttributeNames: Record<string, string> = {};
+
+    if (input.content !== undefined) {
+      updateExpression += ", content = :content";
+      expressionAttributeValues[":content"] = input.content.trim();
+    }
+
+    if (input.completed !== undefined) {
+      updateExpression += ", completed = :completed";
+      expressionAttributeValues[":completed"] = input.completed;
+    }
+
+    if (input.currentTouches !== undefined) {
+      updateExpression += ", currentTouches = :currentTouches";
+      expressionAttributeValues[":currentTouches"] = input.currentTouches;
+    }
+
+    if (input.requiredTouches !== undefined) {
+      updateExpression += ", requiredTouches = :requiredTouches";
+      expressionAttributeValues[":requiredTouches"] = input.requiredTouches;
+    }
+
+    if (input.emoji !== undefined) {
+      updateExpression += ", emoji = :emoji";
+      expressionAttributeValues[":emoji"] = input.emoji;
+    }
+
+    if (input.projectId !== undefined) {
+      updateExpression += ", projectId = :projectId";
+      expressionAttributeValues[":projectId"] = input.projectId;
+    }
+
+    if (input.recurrence !== undefined) {
+      updateExpression += ", recurrence = :recurrence";
+      expressionAttributeValues[":recurrence"] = input.recurrence;
+    }
+
+    if (input.dueDate !== undefined) {
+      updateExpression += ", dueDate = :dueDate";
+      expressionAttributeValues[":dueDate"] = input.dueDate;
+    }
+
+    if (input.priority !== undefined) {
+      updateExpression += ", priority = :priority";
+      expressionAttributeValues[":priority"] = input.priority;
+    }
+
+    if (input.reminders !== undefined) {
+      updateExpression += ", reminders = :reminders";
+      expressionAttributeValues[":reminders"] = input.reminders;
+    }
+
+    const command = new UpdateCommand({
+      TableName: TABLE_NAME,
+      Key: { userId, todoId: input.todoId },
+      UpdateExpression: updateExpression,
+      ExpressionAttributeValues: expressionAttributeValues,
+    });
+
+    await dynamoDb.send(command);
+    revalidatePath("/dashboard");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update todo:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update todo"
     };
   }
 }
