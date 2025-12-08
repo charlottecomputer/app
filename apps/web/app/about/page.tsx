@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ScrollRevealText, ScrollRevealSegment } from '@aliveui';
-import { Text } from '../../../../packages/@aliveui/ui/text';
+import { Text } from '../../../../packages/@aliveui/text';
 
 const segments: ScrollRevealSegment[] = [
     { type: 'label', content: 'Letter from Charlotte' },

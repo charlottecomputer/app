@@ -12,10 +12,10 @@ export default function Home() {
     <main className=" rounded-[45px] !bg-background !text-foreground">
       <EtheralShadow
         color="linear-gradient(to bottom right, var(--chart-1), var(--chart-2), var(--chart-3), var(--chart-4), var(--chart-5))"
-        animation={{
-          scale: 50,
-          speed: 120
-        }}
+        // animation={{
+        //   scale: 50,
+        //   speed: 120
+        // }}
         // staticFilter={true}
 
         className="opacity-80 h-screen absolute inset-0"

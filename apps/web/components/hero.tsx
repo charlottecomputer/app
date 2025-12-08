@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { Card } from "../../../packages/@aliveui/ui/card"
+import { Card } from "../../../packages/@aliveui/card"
 import { useScrollContainer } from "../../../packages/@aliveui"
 import { MacOSDock, Text, EtheralShadow } from "@aliveui"
 import { mockapps } from "@aliveui/lib/apps"

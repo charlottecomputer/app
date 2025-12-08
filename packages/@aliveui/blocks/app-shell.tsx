@@ -3,7 +3,7 @@
 import {
   // EtheralShadow,
   RightSidebar,
-} from "@aliveui/ui"
+} from "@aliveui"
 import { Monoco } from "@monokai/monoco-react"
 import {
 
