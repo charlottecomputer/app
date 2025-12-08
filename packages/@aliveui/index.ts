@@ -125,3 +125,16 @@ export { Checkbox } from "./ui/checkbox"
 export { Field, FieldLabel, FieldDescription, FieldError, FieldGroup, FieldLegend, FieldSeparator, FieldSet, FieldContent, FieldTitle } from "./ui/field"
 export { LoginForm } from "./pages/site/login-form"
 export { SignupForm } from "./pages/site/signup-form"
+
+export {
+  Drawer,
+  DrawerPortal,
+  DrawerOverlay,
+  DrawerTrigger,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerTitle,
+  DrawerDescription
+} from "./ui/drawer"

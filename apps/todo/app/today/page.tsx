@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button, Text } from "@aliveui"
 import { Icon } from "@aliveui"
 import { AddTaskForm } from "@/components/add-task-form"
-import { getTodos } from "@/actions/todo-actions"
+import { getTasks } from "@/actions/todo-actions"
 import type { Project } from "@/types/todo"
 
 export default function TodayPage() {
@@ -14,7 +14,7 @@ export default function TodayPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await getTodos()
+        const response = await getTasks()
         if (response.projects) {
           setProjects(response.projects)
         }

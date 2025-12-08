@@ -1,38 +1,38 @@
 "use client"
 
-import { Todo, Project } from "@/types/todo"
+import { Task, Project } from "@/types/todo"
 import { TodoSquare } from "./todo-square"
 import { Text } from "@aliveui"
 import { format } from "date-fns"
 
 interface TodayViewProps {
-    todos: Todo[]
+    tasks: Task[]
     projects?: Project[]
 }
 
-export function TodayView({ todos, projects = [] }: TodayViewProps) {
+export function TodayView({ tasks, projects = [] }: TodayViewProps) {
     const today = new Date()
     const dayOfWeek = today.getDay() // 0-6
 
-    const todayTodos = todos.filter(todo => {
+    const todayTasks = tasks.filter(task => {
         // 1. If completed today (optional logic, maybe we hide completed?)
         // 2. If recurrence matches today
-        if (todo.recurrence) {
-            if (todo.recurrence.type === 'daily') return true
-            if (todo.recurrence.type === 'weekly' && todo.recurrence.days?.includes(dayOfWeek)) return true
+        if (task.recurrence) {
+            if (task.recurrence.type === 'daily') return true
+            if (task.recurrence.type === 'weekly' && task.recurrence.days?.includes(dayOfWeek)) return true
         }
 
         // 3. If created today (for non-recurring)
-        const createdDate = new Date(todo.createdAt)
+        const createdDate = new Date(task.createdAt)
         if (createdDate.toDateString() === today.toDateString()) return true
 
         // 4. If not completed and not recurring (backlog) - optional, for now let's just show active stuff
-        if (!todo.completed && !todo.recurrence) return true
+        if (!task.completed && !task.recurrence) return true
 
         return false
     })
 
-    if (todayTodos.length === 0) {
+    if (todayTasks.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-12 text-center bg-muted/30 rounded-3xl border border-dashed">
                 <Text variant="medium" className="text-muted-foreground">No tasks for today</Text>
@@ -51,10 +51,10 @@ export function TodayView({ todos, projects = [] }: TodayViewProps) {
             </div>
 
             <div className="flex flex-wrap gap-4">
-                {todayTodos.map(todo => (
+                {todayTasks.map(task => (
                     <TodoSquare
-                        key={todo.todoId}
-                        {...todo}
+                        key={task.taskId}
+                        {...task}
                         projects={projects}
                     />
                 ))}

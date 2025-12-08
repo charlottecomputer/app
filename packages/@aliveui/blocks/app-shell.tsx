@@ -16,6 +16,8 @@ import { AppSidebar } from "../pages/site/app-sidebar"
 import { ScrollProvider } from "../ui/scroll-context"
 import * as React from "react"
 
+import { DailyProgressBar } from "../components/daily-progress-bar"
+
 interface AppShellProps {
   children: React.ReactNode
   user?: {
@@ -29,15 +31,24 @@ interface AppShellProps {
   logo?: React.ReactNode
   appName?: string,
   backgroundAnimated?: boolean
+  dailyProgress?: {
+    current: number
+    total: number
+  }
 }
 
-export function AppShell({ children, user, navMain, sidebar, collapsible = "offcanvas", backgroundAnimated = false, appName }: AppShellProps) {
+export function AppShell({ children, user, navMain, sidebar, collapsible = "offcanvas", backgroundAnimated = false, appName, dailyProgress }: AppShellProps) {
   const scrollRef = React.useRef<HTMLElement>(null)
 
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="flex flex-col h-svh w-svw bg-sidebar ">
         <SiteHeader user={user} navMain={navMain} appName={appName} />
+        {dailyProgress && (
+          <div className="border-b bg-sidebar-accent/50">
+            <DailyProgressBar current={dailyProgress.current} total={dailyProgress.total} />
+          </div>
+        )}
         <div className="flex flex-1 bg-sidebar overflow-hidden">
           {sidebar ? sidebar : <AppSidebar navMain={navMain} user={user} collapsible={collapsible} />}
           <SidebarInset className="flex flex-col bg-sidebar flex-1 overflow-hidden  p-[1px] relative">

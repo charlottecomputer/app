@@ -1,27 +1,27 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getTodos } from "@/actions/todo-actions"
+import { getTasks } from "@/actions/todo-actions"
 import { Button, Text } from "@aliveui"
 import { Icon } from "@aliveui"
 import { AddTaskForm } from "@/components/add-task-form"
 import { TodoList } from "@/components/todo-list"
-import type { Todo, Project } from "@/types/todo"
+import type { Task, Project } from "@/types/todo"
 
 export default function InboxPage() {
   const [showForm, setShowForm] = useState(false)
-  const [todos, setTodos] = useState<Todo[]>([])
+  const [tasks, setTasks] = useState<Task[]>([])
   const [projects, setProjects] = useState<Project[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const loadTodos = async () => {
     setIsLoading(true)
     try {
-      const response = await getTodos()
-      console.log("getTodos response:", response)
-      if (response.todos) {
-        console.log("Setting todos:", response.todos)
-        setTodos(response.todos)
+      const response = await getTasks()
+      console.log("getTasks response:", response)
+      if (response.tasks) {
+        console.log("Setting tasks:", response.tasks)
+        setTasks(response.tasks)
       }
       if (response.projects) {
         setProjects(response.projects)
@@ -42,7 +42,7 @@ export default function InboxPage() {
     loadTodos()
   }
 
-  console.log("Inbox render - todos:", todos, "length:", todos.length, "isLoading:", isLoading)
+  console.log("Inbox render - tasks:", tasks, "length:", tasks.length, "isLoading:", isLoading)
 
   return (
     <div className="flex flex-col h-full gap-4 max-w-3xl mx-auto py-8">
@@ -56,7 +56,7 @@ export default function InboxPage() {
         </div>
       ) : (
         <>
-          <TodoList todos={todos} projects={projects} onToggle={loadTodos} />
+          <TodoList tasks={tasks} projects={projects} />
 
           {showForm ? (
             <AddTaskForm

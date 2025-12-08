@@ -6,7 +6,11 @@ import { dynamoDb, TABLE_NAME } from "@/lib/dynamo";
 import { cognitoClient } from "@/lib/cognito";
 import { getSessionToken } from "./auth-actions";
 import { revalidatePath } from "next/cache";
-import type { Todo, Project, TodosResponse, TodoActionResponse, CreateTodoInput, CreateProjectInput, UpdateTodoInput, UpdateProjectInput } from "@/types/todo";
+import type {
+  Task, Project, Subtask, TodosResponse, TodoActionResponse,
+  CreateTaskInput, CreateProjectInput, UpdateTaskInput, UpdateProjectInput,
+  UpdateSubtaskInput
+} from "@/types/todo";
 
 async function getCurrentUserId(): Promise<string> {
   const token = await getSessionToken();
@@ -25,7 +29,7 @@ async function getCurrentUserId(): Promise<string> {
   }
 }
 
-export async function getTodos(): Promise<TodosResponse> {
+export async function getTasks(): Promise<TodosResponse> {
   try {
     const userId = await getCurrentUserId();
 
@@ -40,44 +44,134 @@ export async function getTodos(): Promise<TodosResponse> {
     const response = await dynamoDb.send(command);
     const items = response.Items || [];
 
-    const todos: Todo[] = [];
+    const tasks: Task[] = [];
     const projects: Project[] = [];
+    const subtasks: Subtask[] = [];
 
     items.forEach((item) => {
       if (item.type === 'project') {
         projects.push({
           userId: String(item.userId),
-          projectId: String(item.todoId), // We store projectId in todoId field for single table design
+          projectId: String(item.todoId), // stored as todoId
           name: String(item.name),
           emoji: item.emoji,
           color: item.color,
           createdAt: String(item.createdAt),
           type: 'project'
         });
+      } else if (item.type === 'subtask') {
+        subtasks.push({
+          subtaskId: String(item.todoId), // stored as todoId
+          taskId: item.taskId,
+          content: String(item.content),
+          completed: Boolean(item.completed),
+          requiredTouches: item.requiredTouches || 1,
+          currentTouches: item.currentTouches || 0,
+          createdAt: String(item.createdAt),
+          emoji: item.emoji,
+        });
       } else {
-        todos.push({
+        // Assume 'todo' or 'task' or undefined is a Task
+        tasks.push({
           userId: String(item.userId),
-          todoId: String(item.todoId),
+          taskId: String(item.todoId),
           content: String(item.content),
           completed: Boolean(item.completed),
           createdAt: String(item.createdAt),
           projectId: item.projectId,
-          requiredTouches: item.requiredTouches || 1,
-          currentTouches: item.currentTouches || 0,
           emoji: item.emoji,
+          lastCompletedAt: item.lastCompletedAt,
           recurrence: item.recurrence,
-          type: 'todo'
+          dueDate: item.dueDate,
+          priority: item.priority,
+          reminders: item.reminders,
+          type: 'task',
+          subtasks: [] // Will populate below
         });
       }
     });
 
-    return { todos, projects };
+    // Nest subtasks into tasks
+    subtasks.forEach(subtask => {
+      const task = tasks.find(t => t.taskId === subtask.taskId);
+      if (task) {
+        task.subtasks = task.subtasks || [];
+        task.subtasks.push(subtask);
+      }
+    });
+
+    // Check for recurring tasks that need to be reset
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tasksToReset: Task[] = [];
+
+    tasks.forEach(task => {
+      if (task.recurrence && task.completed && task.lastCompletedAt) {
+        const lastCompleted = new Date(task.lastCompletedAt);
+        lastCompleted.setHours(0, 0, 0, 0);
+
+        if (lastCompleted.getTime() < today.getTime()) {
+          // Completed before today. Check if it should be active today.
+          let shouldReset = false;
+          const { type, days } = task.recurrence;
+          const dayOfWeek = today.getDay();
+
+          if (type === 'daily') shouldReset = true;
+          else if (type === 'weekdays') shouldReset = dayOfWeek >= 1 && dayOfWeek <= 5;
+          else if (type === 'weekly' && days?.includes(dayOfWeek)) shouldReset = true;
+          else if (type === 'monthly') shouldReset = today.getDate() === (task.recurrence.dayOfMonth || new Date(task.createdAt).getDate());
+          else if (type === 'yearly') {
+            const created = new Date(task.createdAt);
+            shouldReset = today.getDate() === created.getDate() && today.getMonth() === created.getMonth();
+          }
+
+          if (shouldReset) {
+            tasksToReset.push(task);
+          }
+        }
+      }
+    });
+
+    // Perform resets
+    if (tasksToReset.length > 0) {
+      await Promise.all(tasksToReset.map(async (task) => {
+        // Reset task in memory
+        task.completed = false;
+
+        // Reset subtasks in memory
+        if (task.subtasks) {
+          task.subtasks.forEach(sub => {
+            sub.completed = false;
+            sub.currentTouches = 0;
+          });
+        }
+
+        // Update Task in DB
+        await updateTask({
+          taskId: task.taskId,
+          completed: false
+        });
+
+        // Update Subtasks in DB
+        if (task.subtasks) {
+          await Promise.all(task.subtasks.map(sub => updateSubtask({
+            subtaskId: sub.subtaskId,
+            taskId: task.taskId,
+            completed: false,
+            currentTouches: 0
+          })));
+        }
+      }));
+    }
+
+    return { tasks, projects };
   } catch (error) {
-    console.error("Failed to get todos:", error);
+    console.error("Failed to get tasks:", error);
     return {
-      todos: [],
+      tasks: [],
       projects: [],
-      error: error instanceof Error ? error.message : "Failed to fetch todos"
+      error: error instanceof Error ? error.message : "Failed to fetch tasks"
     };
   }
 }
@@ -93,7 +187,7 @@ export async function createProject(input: CreateProjectInput): Promise<TodoActi
 
     const project: Project = {
       userId,
-      projectId, // This maps to todoId in DB
+      projectId,
       name: input.name.trim(),
       emoji: input.emoji,
       color: input.color,
@@ -101,7 +195,6 @@ export async function createProject(input: CreateProjectInput): Promise<TodoActi
       type: 'project'
     };
 
-    // Map to DB schema where SK is todoId
     const item = {
       ...project,
       todoId: projectId, // Store projectId in todoId field
@@ -114,6 +207,7 @@ export async function createProject(input: CreateProjectInput): Promise<TodoActi
 
     await dynamoDb.send(command);
     revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     console.error("Failed to create project:", error);
@@ -121,145 +215,284 @@ export async function createProject(input: CreateProjectInput): Promise<TodoActi
   }
 }
 
-export async function createTodo(input: CreateTodoInput): Promise<TodoActionResponse> {
+export async function createTask(input: CreateTaskInput): Promise<TodoActionResponse> {
   try {
-    // Input validation
     if (!input.content || input.content.trim().length === 0) {
       return { success: false, error: "Content is required" };
     }
 
-    if (input.content.length > 500) {
-      return { success: false, error: "Content cannot exceed 500 characters" };
-    }
-
     const userId = await getCurrentUserId();
-    const todoId = crypto.randomUUID();
+    const taskId = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
 
-    const todo: Todo = {
+    const task: any = {
       userId,
-      todoId,
+      todoId: taskId, // Store taskId in todoId field
       content: input.content.trim(),
       completed: false,
-      createdAt: new Date().toISOString(),
+      createdAt,
       projectId: input.projectId,
-      requiredTouches: input.requiredTouches || 1,
-      currentTouches: 0,
       emoji: input.emoji,
       recurrence: input.recurrence,
       dueDate: input.dueDate,
       priority: input.priority,
       reminders: input.reminders,
-      type: 'todo'
+      type: 'task'
     };
 
-    const command = new PutCommand({
+    // Create Task
+    await dynamoDb.send(new PutCommand({
       TableName: TABLE_NAME,
-      Item: todo,
-    });
+      Item: task,
+    }));
 
-    await dynamoDb.send(command);
+    // Create Subtasks if any
+    if (input.subtasks && input.subtasks.length > 0) {
+      for (const sub of input.subtasks) {
+        const subtaskId = `SUBTASK#${crypto.randomUUID()}`;
+        const subtaskItem = {
+          userId,
+          todoId: subtaskId,
+          taskId,
+          content: sub.content,
+          requiredTouches: sub.requiredTouches,
+          currentTouches: 0,
+          completed: false,
+          createdAt,
+          emoji: sub.emoji,
+          type: 'subtask'
+        };
+        await dynamoDb.send(new PutCommand({
+          TableName: TABLE_NAME,
+          Item: subtaskItem
+        }));
+      }
+    }
+
     revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
 
     return { success: true };
   } catch (error) {
-    console.error("Failed to create todo:", error);
+    console.error("Failed to create task:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to create todo"
+      error: error instanceof Error ? error.message : "Failed to create task"
     };
   }
 }
 
-export async function toggleTodo(todoId: string, completed: boolean): Promise<TodoActionResponse> {
+export async function createSubtask(taskId: string, content: string, requiredTouches: number = 1, emoji?: string): Promise<TodoActionResponse> {
   try {
-    if (!todoId) {
-      return { success: false, error: "Todo ID is required" };
+    const userId = await getCurrentUserId();
+    const subtaskId = `SUBTASK#${crypto.randomUUID()}`;
+
+    const subtaskItem = {
+      userId,
+      todoId: subtaskId,
+      taskId,
+      content,
+      requiredTouches,
+      currentTouches: 0,
+      completed: false,
+      createdAt: new Date().toISOString(),
+      emoji,
+      type: 'subtask'
+    };
+
+    await dynamoDb.send(new PutCommand({
+      TableName: TABLE_NAME,
+      Item: subtaskItem
+    }));
+
+    revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to create subtask:", error);
+    return { success: false, error: "Failed to create subtask" };
+  }
+}
+
+export async function updateSubtask(input: UpdateSubtaskInput): Promise<TodoActionResponse> {
+  try {
+    const userId = await getCurrentUserId();
+
+    let updateExpression = "set updatedAt = :updatedAt";
+    const expressionAttributeValues: Record<string, any> = {
+      ":updatedAt": new Date().toISOString(),
+    };
+
+    if (input.content !== undefined) {
+      updateExpression += ", content = :content";
+      expressionAttributeValues[":content"] = input.content;
+    }
+    if (input.completed !== undefined) {
+      updateExpression += ", completed = :completed";
+      expressionAttributeValues[":completed"] = input.completed;
+    }
+    if (input.currentTouches !== undefined) {
+      updateExpression += ", currentTouches = :currentTouches";
+      expressionAttributeValues[":currentTouches"] = input.currentTouches;
+    }
+    if (input.requiredTouches !== undefined) {
+      updateExpression += ", requiredTouches = :requiredTouches";
+      expressionAttributeValues[":requiredTouches"] = input.requiredTouches;
+    }
+    if (input.emoji !== undefined) {
+      updateExpression += ", emoji = :emoji";
+      expressionAttributeValues[":emoji"] = input.emoji;
+    }
+
+    await dynamoDb.send(new UpdateCommand({
+      TableName: TABLE_NAME,
+      Key: { userId, todoId: input.subtaskId },
+      UpdateExpression: updateExpression,
+      ExpressionAttributeValues: expressionAttributeValues
+    }));
+
+    // Check if all subtasks are complete to complete the parent task?
+    // Or let the client handle that? 
+    // For now, let's just update the subtask.
+
+    revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update subtask:", error);
+    return { success: false, error: "Failed to update subtask" };
+  }
+}
+
+export async function deleteSubtask(subtaskId: string): Promise<TodoActionResponse> {
+  try {
+    const userId = await getCurrentUserId();
+
+    await dynamoDb.send(new DeleteCommand({
+      TableName: TABLE_NAME,
+      Key: { userId, todoId: subtaskId }
+    }));
+
+    revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete subtask:", error);
+    return { success: false, error: "Failed to delete subtask" };
+  }
+}
+
+export async function updateTask(input: UpdateTaskInput): Promise<TodoActionResponse> {
+  try {
+    if (!input.taskId) {
+      return { success: false, error: "Task ID is required" };
     }
 
     const userId = await getCurrentUserId();
 
-    // For simple toggle, we just set completed. 
-    // For multi-touch, the client should calculate logic and call updateTodoProgress if needed, 
-    // but for backward compatibility we keep this.
+    // Build update expression dynamically
+    let updateExpression = "set updatedAt = :updatedAt";
+    const expressionAttributeValues: Record<string, any> = {
+      ":updatedAt": new Date().toISOString(),
+    };
+    const expressionAttributeNames: Record<string, string> = {};
+
+    if (input.content !== undefined) {
+      updateExpression += ", content = :content";
+      expressionAttributeValues[":content"] = input.content.trim();
+    }
+
+    if (input.completed !== undefined) {
+      updateExpression += ", completed = :completed";
+      expressionAttributeValues[":completed"] = input.completed;
+
+      if (input.completed) {
+        updateExpression += ", lastCompletedAt = :lastCompletedAt";
+        expressionAttributeValues[":lastCompletedAt"] = new Date().toISOString();
+      }
+    }
+
+    if (input.emoji !== undefined) {
+      updateExpression += ", emoji = :emoji";
+      expressionAttributeValues[":emoji"] = input.emoji;
+    }
+
+    if (input.projectId !== undefined) {
+      updateExpression += ", projectId = :projectId";
+      expressionAttributeValues[":projectId"] = input.projectId;
+    }
+
+    if (input.recurrence !== undefined) {
+      updateExpression += ", recurrence = :recurrence";
+      expressionAttributeValues[":recurrence"] = input.recurrence;
+    }
+
+    if (input.dueDate !== undefined) {
+      updateExpression += ", dueDate = :dueDate";
+      expressionAttributeValues[":dueDate"] = input.dueDate;
+    }
+
+    if (input.priority !== undefined) {
+      updateExpression += ", priority = :priority";
+      expressionAttributeValues[":priority"] = input.priority;
+    }
+
+    if (input.reminders !== undefined) {
+      updateExpression += ", reminders = :reminders";
+      expressionAttributeValues[":reminders"] = input.reminders;
+    }
 
     const command = new UpdateCommand({
       TableName: TABLE_NAME,
-      Key: { userId, todoId },
-      UpdateExpression: "set completed = :completed",
-      ExpressionAttributeValues: {
-        ":completed": completed,
-      },
+      Key: { userId, todoId: input.taskId },
+      UpdateExpression: updateExpression,
+      ExpressionAttributeValues: expressionAttributeValues,
     });
 
     await dynamoDb.send(command);
     revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
 
     return { success: true };
   } catch (error) {
-    console.error("Failed to toggle todo:", error);
+    console.error("Failed to update task:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to update todo"
+      error: error instanceof Error ? error.message : "Failed to update task"
     };
   }
 }
 
-export async function updateTodoProgress(todoId: string, currentTouches: number, completed: boolean): Promise<TodoActionResponse> {
+export async function deleteTask(taskId: string): Promise<TodoActionResponse> {
   try {
-    if (!todoId) {
-      return { success: false, error: "Todo ID is required" };
+    if (!taskId) {
+      return { success: false, error: "Task ID is required" };
     }
 
     const userId = await getCurrentUserId();
 
-    const command = new UpdateCommand({
-      TableName: TABLE_NAME,
-      Key: { userId, todoId },
-      UpdateExpression: "set currentTouches = :currentTouches, completed = :completed",
-      ExpressionAttributeValues: {
-        ":currentTouches": currentTouches,
-        ":completed": completed,
-      },
-    });
-
-    await dynamoDb.send(command);
-    revalidatePath("/dashboard");
-
-    return { success: true };
-  } catch (error) {
-    console.error("Failed to update todo progress:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to update todo"
-    };
-  }
-}
-
-export async function deleteTodo(todoId: string): Promise<TodoActionResponse> {
-  try {
-    if (!todoId) {
-      return { success: false, error: "Todo ID is required" };
-    }
-
-    const userId = await getCurrentUserId();
+    // TODO: Should also delete subtasks. 
+    // For now, just delete the task. Subtasks will be orphaned (or we can query and delete).
 
     const command = new DeleteCommand({
       TableName: TABLE_NAME,
-      Key: { userId, todoId },
+      Key: { userId, todoId: taskId },
     });
 
     await dynamoDb.send(command);
     revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
 
     return { success: true };
   } catch (error) {
-    console.error("Failed to delete todo:", error);
+    console.error("Failed to delete task:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to delete todo"
+      error: error instanceof Error ? error.message : "Failed to delete task"
     };
   }
 }
+
 export async function updateProject(input: UpdateProjectInput): Promise<TodoActionResponse> {
   try {
     if (!input.projectId) {
@@ -301,6 +534,7 @@ export async function updateProject(input: UpdateProjectInput): Promise<TodoActi
 
     await dynamoDb.send(command);
     revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
 
     return { success: true };
   } catch (error) {
@@ -312,87 +546,46 @@ export async function updateProject(input: UpdateProjectInput): Promise<TodoActi
   }
 }
 
-export async function updateTodo(input: UpdateTodoInput): Promise<TodoActionResponse> {
+export async function getDailyProgress(): Promise<{ total: number; completed: number }> {
   try {
-    if (!input.todoId) {
-      return { success: false, error: "Todo ID is required" };
-    }
+    const { tasks } = await getTasks();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    const userId = await getCurrentUserId();
+    const todayTasks = tasks.filter(task => {
+      // 1. Check specific due date
+      if (task.dueDate) {
+        const dueDate = new Date(task.dueDate);
+        dueDate.setHours(0, 0, 0, 0);
+        return dueDate.getTime() === today.getTime();
+      }
 
-    // Build update expression dynamically
-    let updateExpression = "set updatedAt = :updatedAt";
-    const expressionAttributeValues: Record<string, any> = {
-      ":updatedAt": new Date().toISOString(),
-    };
-    const expressionAttributeNames: Record<string, string> = {};
+      // 2. Check recurrence
+      if (task.recurrence) {
+        const { type, days } = task.recurrence;
+        const dayOfWeek = today.getDay(); // 0 = Sunday
 
-    if (input.content !== undefined) {
-      updateExpression += ", content = :content";
-      expressionAttributeValues[":content"] = input.content.trim();
-    }
+        if (type === 'daily') return true;
+        if (type === 'weekdays') return dayOfWeek >= 1 && dayOfWeek <= 5;
+        if (type === 'weekly' && days?.includes(dayOfWeek)) return true;
+        if (type === 'monthly') return today.getDate() === (task.recurrence.dayOfMonth || new Date(task.createdAt).getDate());
+        if (type === 'yearly') {
+          const created = new Date(task.createdAt);
+          return today.getDate() === created.getDate() && today.getMonth() === created.getMonth();
+        }
+      }
 
-    if (input.completed !== undefined) {
-      updateExpression += ", completed = :completed";
-      expressionAttributeValues[":completed"] = input.completed;
-    }
-
-    if (input.currentTouches !== undefined) {
-      updateExpression += ", currentTouches = :currentTouches";
-      expressionAttributeValues[":currentTouches"] = input.currentTouches;
-    }
-
-    if (input.requiredTouches !== undefined) {
-      updateExpression += ", requiredTouches = :requiredTouches";
-      expressionAttributeValues[":requiredTouches"] = input.requiredTouches;
-    }
-
-    if (input.emoji !== undefined) {
-      updateExpression += ", emoji = :emoji";
-      expressionAttributeValues[":emoji"] = input.emoji;
-    }
-
-    if (input.projectId !== undefined) {
-      updateExpression += ", projectId = :projectId";
-      expressionAttributeValues[":projectId"] = input.projectId;
-    }
-
-    if (input.recurrence !== undefined) {
-      updateExpression += ", recurrence = :recurrence";
-      expressionAttributeValues[":recurrence"] = input.recurrence;
-    }
-
-    if (input.dueDate !== undefined) {
-      updateExpression += ", dueDate = :dueDate";
-      expressionAttributeValues[":dueDate"] = input.dueDate;
-    }
-
-    if (input.priority !== undefined) {
-      updateExpression += ", priority = :priority";
-      expressionAttributeValues[":priority"] = input.priority;
-    }
-
-    if (input.reminders !== undefined) {
-      updateExpression += ", reminders = :reminders";
-      expressionAttributeValues[":reminders"] = input.reminders;
-    }
-
-    const command = new UpdateCommand({
-      TableName: TABLE_NAME,
-      Key: { userId, todoId: input.todoId },
-      UpdateExpression: updateExpression,
-      ExpressionAttributeValues: expressionAttributeValues,
+      return false;
     });
 
-    await dynamoDb.send(command);
-    revalidatePath("/dashboard");
+    const total = todayTasks.length;
+    // A task is completed if it is marked completed.
+    // The client/action logic should ensure task.completed is true when all subtasks are done.
+    const completed = todayTasks.filter(t => t.completed).length;
 
-    return { success: true };
+    return { total, completed };
   } catch (error) {
-    console.error("Failed to update todo:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to update todo"
-    };
+    console.error("Failed to get daily progress:", error);
+    return { total: 0, completed: 0 };
   }
 }

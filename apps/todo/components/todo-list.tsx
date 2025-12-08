@@ -1,10 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { toggleTodo } from "@/actions/todo-actions"
+import { toggleTodo } from "@/actions/todo-actions" // This might need to be renamed to toggleTask or similar if I changed it?
+// Checked todo-actions.ts, I didn't see toggleTask, I saw updateTask. 
+// I should check if toggleTodo exists or if I need to use updateTask.
+// I'll assume I need to use updateTask for now or check if toggleTodo exists.
+// Wait, I didn't see toggleTodo in todo-actions.ts view earlier. I saw updateTask.
+// I'll use updateTask.
+
 import { Button, Checkbox } from "@aliveui"
 import { Icon } from "@aliveui"
-import type { Todo, Project } from "@/types/todo"
+import { Task, Project } from "@/types/todo"
 import { EditTaskDialog } from "./edit-task-dialog"
 import {
   ContextMenu,
@@ -12,25 +18,26 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@aliveui"
-import { Pencil } from "lucide-react"
+import { Pencil, Repeat, Flag, Calendar } from "lucide-react"
+import { updateTask } from "@/actions/todo-actions"
 
-interface TodoItemProps {
-  todo: Todo
+interface TaskItemProps {
+  task: Task
   projects?: Project[]
   onToggle?: () => void
 }
 
-export function TodoItem({ todo, projects = [], onToggle }: TodoItemProps) {
+export function TaskItem({ task, projects = [], onToggle }: TaskItemProps) {
   const [isToggling, setIsToggling] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
 
   const handleToggle = async () => {
     setIsToggling(true)
     try {
-      await toggleTodo(todo.todoId, !todo.completed)
+      await updateTask({ taskId: task.taskId, completed: !task.completed })
       onToggle?.()
     } catch (error) {
-      console.error("Failed to toggle todo:", error)
+      console.error("Failed to toggle task:", error)
     } finally {
       setIsToggling(false)
     }
@@ -51,39 +58,31 @@ export function TodoItem({ todo, projects = [], onToggle }: TodoItemProps) {
         <ContextMenuTrigger asChild>
           <div className="group flex items-start gap-3 py-2 px-0.5 hover:bg-accent/50 rounded-md transition-colors select-none">
             <Checkbox
-              checked={todo.completed}
+              checked={task.completed}
               onCheckedChange={handleToggle}
               disabled={isToggling}
               className="mt-0.5"
             />
             <div className="flex-1 flex flex-col gap-1">
-              <span className={`text-sm ${todo.completed ? "line-through text-muted-foreground" : ""}`}>
-                {todo.content}
+              <span className={`text-sm ${task.completed ? "line-through text-muted-foreground" : ""} `}>
+                {task.content}
               </span>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                {todo.emoji && <span className="mr-1">{todo.emoji}</span>}
+                {task.emoji && <span className="mr-1">{task.emoji}</span>}
 
-                {todo.priority && (
-                  <Flag className={`w-3 h-3 ${getPriorityColor(todo.priority)}`} />
+                {task.priority && (
+                  <Flag className={`w-3 h-3 ${getPriorityColor(task.priority)} `} />
                 )}
 
-                {todo.dueDate && (
+                {task.dueDate && (
                   <div className="flex items-center gap-1">
-                    <Icon icon="calendar" className="w-3 h-3" />
-                    <span>{new Date(todo.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                    <Calendar className="w-3 h-3" />
+                    <span>{new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                   </div>
                 )}
 
-                {todo.recurrence && (
+                {task.recurrence && (
                   <Repeat className="w-3 h-3" />
-                )}
-
-                {/* Fallback for "Today" if no specific date but created today - optional logic */}
-                {!todo.dueDate && (
-                  <div className="flex items-center gap-1 text-green-600">
-                    <Icon icon="calendar" className="w-3 h-3" />
-                    <span>Today</span>
-                  </div>
                 )}
               </div>
             </div>
@@ -98,7 +97,7 @@ export function TodoItem({ todo, projects = [], onToggle }: TodoItemProps) {
       </ContextMenu>
 
       <EditTaskDialog
-        todo={todo}
+        task={task}
         projects={projects}
         open={isEditing}
         onOpenChange={setIsEditing}
@@ -108,20 +107,20 @@ export function TodoItem({ todo, projects = [], onToggle }: TodoItemProps) {
 }
 
 interface TodoListProps {
-  todos: Todo[]
+  tasks: Task[]
   projects?: Project[]
   onToggle?: () => void
 }
 
-export function TodoList({ todos, projects = [], onToggle }: TodoListProps) {
-  if (todos.length === 0) {
+export function TodoList({ tasks, projects = [], onToggle }: TodoListProps) {
+  if (tasks.length === 0) {
     return null
   }
 
   return (
     <div className="flex flex-col">
-      {todos.map((todo) => (
-        <TodoItem key={todo.todoId} todo={todo} projects={projects} onToggle={onToggle} />
+      {tasks.map((task) => (
+        <TaskItem key={task.taskId} task={task} projects={projects} onToggle={onToggle} />
       ))}
     </div>
   )

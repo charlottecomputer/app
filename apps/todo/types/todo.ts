@@ -12,29 +12,40 @@ export interface Recurrence {
   days?: number[]; // 0-6 for weekly (0 = Sunday)
   basis?: RecurrenceBasis; // Default to 'scheduled'
   endDate?: string; // ISO date string, if null/undefined then "Never"
-  // For monthly/yearly "on the 4th Sunday" type logic, we might need more fields, 
-  // but for now let's stick to simple day of month or specific date.
   dayOfMonth?: number;
   monthOfYear?: number;
 }
 
-export interface Todo {
+export interface Subtask {
+  subtaskId: string;
+  taskId: string;
+  content: string;
+  completed: boolean;
+  requiredTouches: number;
+  currentTouches: number;
+  createdAt: string;
+  emoji?: string;
+}
+
+export interface Task {
   userId: string;
-  todoId: string;
+  taskId: string; // Renamed from todoId
   content: string;
   completed: boolean;
   createdAt: string;
 
   // New fields
   projectId?: string;
-  requiredTouches?: number;
-  currentTouches?: number;
   emoji?: string;
   recurrence?: Recurrence;
   dueDate?: string; // ISO date string
   priority?: Priority;
   reminders?: string[]; // ISO date strings
-  type?: 'todo'; // To distinguish from projects if needed
+  type: 'task'; // Renamed from 'todo'
+
+  // Subtasks are fetched separately or embedded
+  subtasks?: Subtask[];
+  lastCompletedAt?: string; // ISO date string
 }
 
 export interface Project {
@@ -48,11 +59,11 @@ export interface Project {
 }
 
 // Union type for items returned from DB
-export type TodoItem = Todo | Project;
+export type TodoItem = Task | Project;
 
 // API Response Types
 export interface TodosResponse {
-  todos: Todo[];
+  tasks: Task[];
   projects?: Project[];
   error?: string;
 }
@@ -60,18 +71,19 @@ export interface TodosResponse {
 export interface TodoActionResponse {
   success: boolean;
   error?: string;
+  data?: any;
 }
 
 // Input Types
-export interface CreateTodoInput {
+export interface CreateTaskInput {
   content: string;
   projectId?: string;
-  requiredTouches?: number;
   emoji?: string;
   recurrence?: Recurrence;
   dueDate?: string;
   priority?: Priority;
   reminders?: string[];
+  subtasks?: { content: string; requiredTouches: number; emoji?: string }[];
 }
 
 export interface CreateProjectInput {
@@ -80,18 +92,26 @@ export interface CreateProjectInput {
   color?: string;
 }
 
-export interface UpdateTodoInput {
-  todoId: string;
+export interface UpdateTaskInput {
+  taskId: string;
   content?: string;
   completed?: boolean;
-  currentTouches?: number;
-  requiredTouches?: number;
   emoji?: string;
   projectId?: string;
   recurrence?: Recurrence;
   dueDate?: string;
   priority?: Priority;
   reminders?: string[];
+}
+
+export interface UpdateSubtaskInput {
+  subtaskId: string;
+  taskId: string;
+  content?: string;
+  completed?: boolean;
+  currentTouches?: number;
+  requiredTouches?: number;
+  emoji?: string;
 }
 
 export interface UpdateProjectInput {
@@ -101,6 +121,6 @@ export interface UpdateProjectInput {
   color?: string;
 }
 
-export interface DeleteTodoInput {
-  todoId: string;
+export interface DeleteTaskInput {
+  taskId: string;
 }

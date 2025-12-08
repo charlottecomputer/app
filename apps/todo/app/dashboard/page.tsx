@@ -1,13 +1,14 @@
-import { getTodos } from "@/actions/todo-actions";
+import { getTasks } from "@/actions/todo-actions";
 import { getUserProfile } from "@/actions/user-actions";
 import { TodayView } from "@/components/today-view";
 import { ProjectCard } from "@/components/project-card";
 import { ProjectsSection } from "@/components/projects-section";
 import { Text } from "@aliveui";
 import { redirect } from "next/navigation";
+import { Task } from "@/types/todo";
 
 export default async function DashboardPage() {
-  const { todos, projects = [], error } = await getTodos();
+  const { tasks, projects = [], error } = await getTasks();
 
   if (error === "Unauthorized") {
     redirect("/login");
@@ -15,14 +16,14 @@ export default async function DashboardPage() {
 
   const user = await getUserProfile();
 
-  // Group todos by project
-  const todosByProject = todos.reduce((acc, todo) => {
-    if (todo.projectId) {
-      if (!acc[todo.projectId]) acc[todo.projectId] = [];
-      acc[todo.projectId].push(todo);
+  // Group tasks by project
+  const tasksByProject = tasks.reduce((acc, task) => {
+    if (task.projectId) {
+      if (!acc[task.projectId]) acc[task.projectId] = [];
+      acc[task.projectId].push(task);
     }
     return acc;
-  }, {} as Record<string, typeof todos>);
+  }, {} as Record<string, Task[]>);
 
   return (
     <div className="flex flex-col gap-8 p-6 max-w-6xl mx-auto w-full">
@@ -39,11 +40,11 @@ export default async function DashboardPage() {
 
       {/* Today View */}
       <section>
-        <TodayView todos={todos} projects={projects} />
+        <TodayView tasks={tasks} projects={projects} />
       </section>
 
       {/* Projects Grid */}
-      <ProjectsSection projects={projects} todosByProject={todosByProject} />
+      <ProjectsSection projects={projects} tasksByProject={tasksByProject} />
     </div>
   );
 }

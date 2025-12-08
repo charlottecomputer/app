@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Project, Todo } from "@/types/todo"
+import { Project, Task } from "@/types/todo"
 import { ProjectCard } from "./project-card"
 import { CreateProjectForm } from "./create-project-form"
 import { Button, Text, Icon } from "@aliveui"
@@ -9,10 +9,10 @@ import { Plus } from "lucide-react"
 
 interface ProjectsSectionProps {
     projects: Project[]
-    todosByProject: Record<string, Todo[]>
+    tasksByProject: Record<string, Task[]>
 }
 
-export function ProjectsSection({ projects, todosByProject }: ProjectsSectionProps) {
+export function ProjectsSection({ projects, tasksByProject }: ProjectsSectionProps) {
     const [showCreateForm, setShowCreateForm] = useState(false)
 
     return (
@@ -48,7 +48,7 @@ export function ProjectsSection({ projects, todosByProject }: ProjectsSectionPro
                         <ProjectCard
                             key={project.projectId}
                             project={project}
-                            todos={todosByProject[project.projectId] || []}
+                            tasks={tasksByProject[project.projectId] || []}
                             projects={projects}
                         />
                     ))}

@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppShell, Text } from "@aliveui";
 import { AppSidebar, sidebarData } from "@/components/app-sidebar-wrapper";
 import { getUserProfile } from "@/actions/user-actions";
+import { getDailyProgress } from "@/actions/todo-actions";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -13,8 +14,6 @@ const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
 });
-
-
 
 export const metadata: Metadata = {
   title: "Floslate Todo",
@@ -36,6 +35,8 @@ export default async function RootLayout({
     user = undefined;
   }
 
+  const dailyProgress = await getDailyProgress();
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
@@ -44,6 +45,10 @@ export default async function RootLayout({
           navMain={sidebarData.navMain}
           appName="Todo"
           sidebar={<AppSidebar navMain={sidebarData.navMain} user={user} />}
+          dailyProgress={{
+            current: dailyProgress.completed,
+            total: dailyProgress.total
+          }}
         >
           {children}
         </AppShell>

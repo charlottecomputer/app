@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Todo, Project } from "@/types/todo"
+import { Task, Project } from "@/types/todo"
 import { TodoSquare } from "./todo-square"
 import { Text } from "@aliveui"
 import { Plus, MoreHorizontal, Settings } from "lucide-react"
@@ -15,21 +15,25 @@ import {
     Button
 } from "@aliveui"
 
+import { TaskDrawer } from "./task-drawer"
+
 interface ProjectCardProps {
     project: Project
-    todos: Todo[]
+    tasks: Task[]
     projects?: Project[]
 }
 
-export function ProjectCard({ project, todos, projects = [] }: ProjectCardProps) {
+export function ProjectCard({ project, tasks, projects = [] }: ProjectCardProps) {
     const [isAddingTask, setIsAddingTask] = useState(false)
     const [isEditingProject, setIsEditingProject] = useState(false)
-    const totalTodos = todos.length
-    const completedTodos = todos.filter(t => t.completed).length
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const totalTasks = tasks.length
+    const completedTasks = tasks.filter(t => t.completed).length
 
     // Calculate total progress based on touches if we want to be precise, 
     // but for now simple task completion ratio is a good start.
-    const progress = totalTodos === 0 ? 0 : (completedTodos / totalTodos) * 100
+    const progress = totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100
 
     return (
         <>
@@ -42,7 +46,7 @@ export function ProjectCard({ project, todos, projects = [] }: ProjectCardProps)
                         <div>
                             <Text variant="medium" className="text-lg">{project.name}</Text>
                             <Text variant="regular" className="text-xs text-muted-foreground">
-                                {completedTodos}/{totalTodos} tasks completed
+                                {completedTasks}/{totalTasks} tasks completed
                             </Text>
                         </div>
                     </div>
@@ -78,11 +82,16 @@ export function ProjectCard({ project, todos, projects = [] }: ProjectCardProps)
 
                 {/* Todos Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mt-2">
-                    {todos.map(todo => (
+                    {tasks.map(task => (
                         <TodoSquare
-                            key={todo.todoId}
-                            {...todo}
+                            key={task.taskId}
+                            {...task}
                             projects={projects}
+                            hideSubtasks={true}
+                            onClick={() => {
+                                setSelectedTask(task)
+                                setIsDrawerOpen(true)
+                            }}
                         />
                     ))}
 
@@ -92,7 +101,6 @@ export function ProjectCard({ project, todos, projects = [] }: ProjectCardProps)
                             <AddTaskForm
                                 projects={projects}
                                 defaultProjectId={project.projectId}
-                                onCancel={() => setIsAddingTask(false)}
                                 onSuccess={() => setIsAddingTask(false)}
                             />
                         </div>
@@ -112,6 +120,12 @@ export function ProjectCard({ project, todos, projects = [] }: ProjectCardProps)
                 project={project}
                 open={isEditingProject}
                 onOpenChange={setIsEditingProject}
+            />
+
+            <TaskDrawer
+                task={selectedTask}
+                open={isDrawerOpen}
+                onOpenChange={setIsDrawerOpen}
             />
         </>
     )
