@@ -6,7 +6,7 @@ import { dynamoDb, TABLE_NAME } from "@/lib/dynamo";
 import { cognitoClient } from "@/lib/cognito";
 import { getSessionToken } from "./auth-actions";
 import { revalidatePath } from "next/cache";
-import type { Todo, TodosResponse, TodoActionResponse } from "@/types/todo";
+import type { Todo, Project, TodosResponse, TodoActionResponse, CreateTodoInput, CreateProjectInput } from "@/types/todo";
 
 async function getCurrentUserId(): Promise<string> {
   const token = await getSessionToken();
@@ -28,7 +28,7 @@ async function getCurrentUserId(): Promise<string> {
 export async function getTodos(): Promise<TodosResponse> {
   try {
     const userId = await getCurrentUserId();
-    
+
     const command = new QueryCommand({
       TableName: TABLE_NAME,
       KeyConditionExpression: "userId = :userId",
@@ -38,48 +38,117 @@ export async function getTodos(): Promise<TodosResponse> {
     });
 
     const response = await dynamoDb.send(command);
-    
-    // Type-safe mapping with validation
-    const todos: Todo[] = (response.Items || []).map((item) => ({
-      userId: String(item.userId),
-      todoId: String(item.todoId),
-      content: String(item.content),
-      completed: Boolean(item.completed),
-      createdAt: String(item.createdAt),
-    }));
-    
-    return { todos };
+    const items = response.Items || [];
+
+    const todos: Todo[] = [];
+    const projects: Project[] = [];
+
+    items.forEach((item) => {
+      if (item.type === 'project') {
+        projects.push({
+          userId: String(item.userId),
+          projectId: String(item.todoId), // We store projectId in todoId field for single table design
+          name: String(item.name),
+          emoji: item.emoji,
+          color: item.color,
+          createdAt: String(item.createdAt),
+          type: 'project'
+        });
+      } else {
+        todos.push({
+          userId: String(item.userId),
+          todoId: String(item.todoId),
+          content: String(item.content),
+          completed: Boolean(item.completed),
+          createdAt: String(item.createdAt),
+          projectId: item.projectId,
+          requiredTouches: item.requiredTouches || 1,
+          currentTouches: item.currentTouches || 0,
+          emoji: item.emoji,
+          recurrence: item.recurrence,
+          type: 'todo'
+        });
+      }
+    });
+
+    return { todos, projects };
   } catch (error) {
     console.error("Failed to get todos:", error);
-    return { 
-      todos: [], 
-      error: error instanceof Error ? error.message : "Failed to fetch todos" 
+    return {
+      todos: [],
+      projects: [],
+      error: error instanceof Error ? error.message : "Failed to fetch todos"
     };
   }
 }
 
-export async function createTodo(content: string): Promise<TodoActionResponse> {
+export async function createProject(input: CreateProjectInput): Promise<TodoActionResponse> {
+  try {
+    if (!input.name || input.name.trim().length === 0) {
+      return { success: false, error: "Project name is required" };
+    }
+
+    const userId = await getCurrentUserId();
+    const projectId = `PROJECT#${crypto.randomUUID()}`;
+
+    const project: Project = {
+      userId,
+      projectId, // This maps to todoId in DB
+      name: input.name.trim(),
+      emoji: input.emoji,
+      color: input.color,
+      createdAt: new Date().toISOString(),
+      type: 'project'
+    };
+
+    // Map to DB schema where SK is todoId
+    const item = {
+      ...project,
+      todoId: projectId, // Store projectId in todoId field
+    };
+
+    const command = new PutCommand({
+      TableName: TABLE_NAME,
+      Item: item,
+    });
+
+    await dynamoDb.send(command);
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to create project:", error);
+    return { success: false, error: "Failed to create project" };
+  }
+}
+
+export async function createTodo(input: CreateTodoInput): Promise<TodoActionResponse> {
   try {
     // Input validation
-    if (!content || content.trim().length === 0) {
+    if (!input.content || input.content.trim().length === 0) {
       return { success: false, error: "Content is required" };
     }
-    
-    if (content.length > 500) {
+
+    if (input.content.length > 500) {
       return { success: false, error: "Content cannot exceed 500 characters" };
     }
 
     const userId = await getCurrentUserId();
     const todoId = crypto.randomUUID();
-    
+
     const todo: Todo = {
       userId,
       todoId,
-      content: content.trim(),
+      content: input.content.trim(),
       completed: false,
       createdAt: new Date().toISOString(),
+      projectId: input.projectId,
+      requiredTouches: input.requiredTouches || 1,
+      currentTouches: 0,
+      emoji: input.emoji,
+      recurrence: input.recurrence,
+      type: 'todo'
     };
-    
+
     const command = new PutCommand({
       TableName: TABLE_NAME,
       Item: todo,
@@ -87,13 +156,13 @@ export async function createTodo(content: string): Promise<TodoActionResponse> {
 
     await dynamoDb.send(command);
     revalidatePath("/dashboard");
-    
+
     return { success: true };
   } catch (error) {
     console.error("Failed to create todo:", error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : "Failed to create todo" 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to create todo"
     };
   }
 }
@@ -105,7 +174,11 @@ export async function toggleTodo(todoId: string, completed: boolean): Promise<To
     }
 
     const userId = await getCurrentUserId();
-    
+
+    // For simple toggle, we just set completed. 
+    // For multi-touch, the client should calculate logic and call updateTodoProgress if needed, 
+    // but for backward compatibility we keep this.
+
     const command = new UpdateCommand({
       TableName: TABLE_NAME,
       Key: { userId, todoId },
@@ -117,13 +190,44 @@ export async function toggleTodo(todoId: string, completed: boolean): Promise<To
 
     await dynamoDb.send(command);
     revalidatePath("/dashboard");
-    
+
     return { success: true };
   } catch (error) {
     console.error("Failed to toggle todo:", error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : "Failed to update todo" 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update todo"
+    };
+  }
+}
+
+export async function updateTodoProgress(todoId: string, currentTouches: number, completed: boolean): Promise<TodoActionResponse> {
+  try {
+    if (!todoId) {
+      return { success: false, error: "Todo ID is required" };
+    }
+
+    const userId = await getCurrentUserId();
+
+    const command = new UpdateCommand({
+      TableName: TABLE_NAME,
+      Key: { userId, todoId },
+      UpdateExpression: "set currentTouches = :currentTouches, completed = :completed",
+      ExpressionAttributeValues: {
+        ":currentTouches": currentTouches,
+        ":completed": completed,
+      },
+    });
+
+    await dynamoDb.send(command);
+    revalidatePath("/dashboard");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update todo progress:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update todo"
     };
   }
 }
@@ -135,7 +239,7 @@ export async function deleteTodo(todoId: string): Promise<TodoActionResponse> {
     }
 
     const userId = await getCurrentUserId();
-    
+
     const command = new DeleteCommand({
       TableName: TABLE_NAME,
       Key: { userId, todoId },
@@ -143,13 +247,13 @@ export async function deleteTodo(todoId: string): Promise<TodoActionResponse> {
 
     await dynamoDb.send(command);
     revalidatePath("/dashboard");
-    
+
     return { success: true };
   } catch (error) {
     console.error("Failed to delete todo:", error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : "Failed to delete todo" 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to delete todo"
     };
   }
 }

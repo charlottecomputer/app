@@ -44,7 +44,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-  ],
+, "../../apps/web/app/lib/auth-service.ts", "../../apps/web/app/lib/cognito.ts", "../../apps/web/app/lib/dynamo.ts"  ],
   "exclude": [
     "node_modules"
   ]

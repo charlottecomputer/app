@@ -6,11 +6,12 @@ import { Button, Text } from "@aliveui"
 import { Icon } from "@aliveui"
 import { AddTaskForm } from "@/components/add-task-form"
 import { TodoList } from "@/components/todo-list"
-import type { Todo } from "@/types/todo"
+import type { Todo, Project } from "@/types/todo"
 
 export default function InboxPage() {
   const [showForm, setShowForm] = useState(false)
   const [todos, setTodos] = useState<Todo[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const loadTodos = async () => {
@@ -21,6 +22,9 @@ export default function InboxPage() {
       if (response.todos) {
         console.log("Setting todos:", response.todos)
         setTodos(response.todos)
+      }
+      if (response.projects) {
+        setProjects(response.projects)
       }
     } catch (error) {
       console.error("Failed to load todos:", error)
@@ -58,6 +62,7 @@ export default function InboxPage() {
             <AddTaskForm
               onCancel={() => setShowForm(false)}
               onSuccess={handleSuccess}
+              projects={projects}
             />
           ) : (
             <Button

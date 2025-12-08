@@ -39,7 +39,7 @@ export function AppShell({ children, user, navMain, sidebar, collapsible = "offc
       <div className="flex flex-col h-svh w-svw bg-sidebar ">
         <SiteHeader user={user} navMain={navMain} appName={appName} />
         <div className="flex flex-1 bg-sidebar overflow-hidden">
-          {/* {sidebar ? sidebar : <AppSidebar navMain={navMain} user={user} collapsible={collapsible} />} */}
+          {sidebar ? sidebar : <AppSidebar navMain={navMain} user={user} collapsible={collapsible} />}
           <SidebarInset className="flex flex-col bg-sidebar flex-1 overflow-hidden  p-[1px] relative">
             <Monoco
               borderRadius={45}

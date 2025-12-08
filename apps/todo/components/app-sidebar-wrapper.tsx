@@ -70,5 +70,5 @@ export const sidebarData: {
 }
 
 export function AppSidebarWrapper() {
-  return <AppSidebar navMain={sidebarData.navMain} />
+  return <AppSidebar navMain={sidebarData.navMain} user={sidebarData.user} />
 }

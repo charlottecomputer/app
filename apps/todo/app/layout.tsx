@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { AppShell, Text } from "@aliveui";
-import { sidebarData } from "@/components/app-sidebar-wrapper";
-// import { sidebarData } from "@/components/app-sidebar-wrapper";
+import { AppSidebar, sidebarData } from "@/components/app-sidebar-wrapper";
+import { getUserProfile } from "@/actions/user-actions";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -22,18 +22,28 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Try to get the user profile, but don't fail if not authenticated
+  let user;
+  try {
+    user = await getUserProfile();
+  } catch (error) {
+    // User not authenticated, user will be undefined
+    user = undefined;
+  }
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AppShell
-          user={sidebarData.user}
+          user={user}
           navMain={sidebarData.navMain}
           appName="Todo"
+          sidebar={<AppSidebar navMain={sidebarData.navMain} user={user} />}
         >
           {children}
         </AppShell>

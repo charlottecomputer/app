@@ -35,24 +35,22 @@ export function NavUser({
   const { isMobile } = useSidebar()
 
   console.log('user', user)
-  if (!user) return null
-
-  // if (!user) {
-  //   return (
-  //     <div className="flex items-center gap-2">
-  //       <Button variant="ghost" size="sm" asChild>
-  //         <a href="/login/">
-  //           Log in
-  //         </a>
-  //       </Button>
-  //       <Button variant="ghost" size="sm" asChild>
-  //         <a href="/signup">
-  //           Sign up
-  //         </a>
-  //       </Button>
-  //     </div>
-  //   )
-  // }
+  if (!user) {
+    return (
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="sm" asChild>
+          <a href="/login">
+            Log in
+          </a>
+        </Button>
+        <Button variant="ghost" size="sm" asChild>
+          <a href="/signup">
+            Sign up
+          </a>
+        </Button>
+      </div>
+    )
+  }
 
   return (
     <DropdownMenu>

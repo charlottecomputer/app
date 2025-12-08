@@ -1,30 +1,49 @@
 import { getTodos } from "@/actions/todo-actions";
 import { getUserProfile } from "@/actions/user-actions";
-import { TodoList } from "./todo-list";
-import { Button, Card, CardContent } from "@aliveui";
-import { X } from "lucide-react";
+import { TodayView } from "@/components/today-view";
+import { ProjectCard } from "@/components/project-card";
+import { ProjectsSection } from "@/components/projects-section";
+import { Text } from "@aliveui";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
-  const { todos } = await getTodos();
+  const { todos, projects = [], error } = await getTodos();
+
+  if (error === "Unauthorized") {
+    redirect("/login");
+  }
+
   const user = await getUserProfile();
 
+  // Group todos by project
+  const todosByProject = todos.reduce((acc, todo) => {
+    if (todo.projectId) {
+      if (!acc[todo.projectId]) acc[todo.projectId] = [];
+      acc[todo.projectId].push(todo);
+    }
+    return acc;
+  }, {} as Record<string, typeof todos>);
+
   return (
-    <div className="flex flex-col gap-6 p-4 max-w-6xl mx-auto w-full">
+    <div className="flex flex-col gap-8 p-6 max-w-6xl mx-auto w-full">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-2xl font-bold">
+        <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold">
           {user?.name?.[0] || "U"}
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">My Tasks</p>
-          <h1 className="text-3xl font-bold">Hi, {user?.name || "User"}</h1>
+          <Text variant="regular" className="text-sm text-muted-foreground">Welcome back</Text>
+          <Text variant="h1" className="text-3xl font-bold">{user?.name || "User"}</Text>
         </div>
       </div>
 
-      {/* Todo List */}
-      <div>
-        <TodoList initialTodos={todos} />
-      </div>
+      {/* Today View */}
+      <section>
+        <TodayView todos={todos} />
+      </section>
+
+      {/* Projects Grid */}
+      <ProjectsSection projects={projects} todosByProject={todosByProject} />
     </div>
   );
 }

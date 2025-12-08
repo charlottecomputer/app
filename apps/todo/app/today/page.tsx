@@ -1,12 +1,29 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button, Text } from "@aliveui"
 import { Icon } from "@aliveui"
 import { AddTaskForm } from "@/components/add-task-form"
+import { getTodos } from "@/actions/todo-actions"
+import type { Project } from "@/types/todo"
 
 export default function TodayPage() {
   const [showForm, setShowForm] = useState(false)
+  const [projects, setProjects] = useState<Project[]>([])
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const response = await getTodos()
+        if (response.projects) {
+          setProjects(response.projects)
+        }
+      } catch (error) {
+        console.error("Failed to load projects:", error)
+      }
+    }
+    loadData()
+  }, [])
 
   return (
     <div className="flex flex-col h-full gap-4 max-w-3xl mx-auto py-8">
@@ -21,6 +38,7 @@ export default function TodayPage() {
           <AddTaskForm
             onCancel={() => setShowForm(false)}
             onSuccess={() => setShowForm(false)}
+            projects={projects}
           />
 
         ) : (

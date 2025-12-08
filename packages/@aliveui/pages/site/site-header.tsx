@@ -78,7 +78,7 @@ export function SiteHeader({
 
             >
               {/* @ts-ignore */}
-              {/* <SidebarIcon className="h-5 w-5" /> */}
+              <SidebarIcon className="h-5 w-5" />
             </Button>
           )}
         </div>
