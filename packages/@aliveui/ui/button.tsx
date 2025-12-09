@@ -46,21 +46,26 @@ const buttonVariants = cva(
 
 const MotionSlot = motion.create(Slot)
 
-function Button({
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+  asChild?: boolean
+  icon?: React.ReactNode
+  iconRight?: React.ReactNode
+  children?: string | number | React.ReactNode // Allow number for calendar days
+}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
   className,
   variant,
   size,
   asChild = false,
   children,
   ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }) {
+}, ref) => {
   const Comp = asChild ? MotionSlot : motion.button
 
   return (
     <Comp
+      ref={ref}
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       whileTap={{ scale: 0.95, rotateX: 10 }}
@@ -76,13 +81,22 @@ function Button({
         {asChild ? (
           children
         ) : (
-          <Text variant="regular" className="text-[13px] leading-[16px]">
-            {children}
-          </Text>
+          <>
+            {children !== undefined && children !== null && (
+              (typeof children === 'string' || typeof children === 'number') ? (
+                <Text variant="regular" className="text-[13px] leading-[16px]">
+                  {children}
+                </Text>
+              ) : (
+                children // Fallback
+              )
+            )}
+          </>
         )}
       </Monoco>
     </Comp>
   )
-}
+})
+Button.displayName = "Button"
 
 export { Button, buttonVariants }

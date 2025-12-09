@@ -23,8 +23,8 @@ export function ProjectsSection({ projects, tasksByProject }: ProjectsSectionPro
                     variant="outline"
                     size="sm"
                     onClick={() => setShowCreateForm(!showCreateForm)}
+                    icon={<Plus className="w-4 h-4" />}
                 >
-                    <Plus className="w-4 h-4 mr-2" />
                     New Project
                 </Button>
             </div>

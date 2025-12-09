@@ -57,8 +57,7 @@ export function TaskRecurrencePicker({ recurrence, onRecurrenceChange }: TaskRec
         <>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className={cn("justify-start text-left font-normal", !recurrence && "text-muted-foreground")}>
-                        <Repeat className="mr-2 h-4 w-4" />
+                    <Button variant="outline" size="sm" className={cn("justify-start text-left font-normal", !recurrence && "text-muted-foreground")} icon={<Repeat className="h-4 w-4" />}>
                         <span className="truncate max-w-[150px]">{getLabel()}</span>
                         {recurrence && (
                             <span

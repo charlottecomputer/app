@@ -100,7 +100,6 @@ export default function TodayPage() {
           <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
             <DrawerTrigger asChild>
               <Button size="sm">
-                <Plus className="mr-2 h-4 w-4" />
                 Add Subtask
               </Button>
             </DrawerTrigger>

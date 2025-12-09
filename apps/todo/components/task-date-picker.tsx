@@ -32,8 +32,7 @@ export function TaskDatePicker({ date, onDateChange }: TaskDatePickerProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className={cn("justify-start text-left font-normal", !date && "text-muted-foreground")}>
-                    <CalendarIcon className="mr-2 h-4 w-4" />
+                <Button variant="outline" size="sm" className={cn("justify-start text-left font-normal", !date && "text-muted-foreground")} icon={<CalendarIcon className="h-4 w-4" />}>
                     {date ? format(date, "MMM d") : "Date"}
                     {date && (
                         <span

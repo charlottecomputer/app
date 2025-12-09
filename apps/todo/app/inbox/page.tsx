@@ -63,8 +63,7 @@ export default function InboxPage() {
 
           <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
             <DrawerTrigger asChild>
-              <Button size="sm">
-                <Plus className="mr-2 h-4 w-4" />
+              <Button size="sm" icon={<Plus className="h-4 w-4" />}>
                 Add Habit
               </Button>
             </DrawerTrigger>
