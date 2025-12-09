@@ -6,15 +6,17 @@ import { Drawer as DrawerPrimitive } from "vaul"
 import { cn } from "@aliveui"
 
 function Drawer({
+    children,
     ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-    return <DrawerPrimitive.Root data-slot="drawer" {...props} />
+}: React.ComponentProps<typeof DrawerPrimitive.Root> & { children?: React.ReactNode }) {
+    return <DrawerPrimitive.Root data-slot="drawer" {...props}>{children}</DrawerPrimitive.Root>
 }
 
 function DrawerTrigger({
+    children,
     ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
-    return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />
+}: React.ComponentProps<typeof DrawerPrimitive.Trigger> & { children?: React.ReactNode }) {
+    return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props}>{children}</DrawerPrimitive.Trigger>
 }
 
 function DrawerPortal({
@@ -49,7 +51,7 @@ function DrawerContent({
     className,
     children,
     ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+}: React.ComponentProps<typeof DrawerPrimitive.Content> & { children?: React.ReactNode }) {
     return (
         <DrawerPortal data-slot="drawer-portal">
             <DrawerOverlay />
@@ -97,27 +99,33 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
 
 function DrawerTitle({
     className,
+    children,
     ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Title>) {
+}: React.ComponentProps<typeof DrawerPrimitive.Title> & { children?: React.ReactNode }) {
     return (
         <DrawerPrimitive.Title
             data-slot="drawer-title"
             className={cn("text-foreground font-semibold", className)}
             {...props}
-        />
+        >
+            {children}
+        </DrawerPrimitive.Title>
     )
 }
 
 function DrawerDescription({
     className,
+    children,
     ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Description>) {
+}: React.ComponentProps<typeof DrawerPrimitive.Description> & { children?: React.ReactNode }) {
     return (
         <DrawerPrimitive.Description
             data-slot="drawer-description"
             className={cn("text-muted-foreground text-sm", className)}
             {...props}
-        />
+        >
+            {children}
+        </DrawerPrimitive.Description>
     )
 }
 

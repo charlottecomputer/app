@@ -165,11 +165,22 @@ export function TodoSquare({ projects = [], hideSubtasks = false, onClick, ...ta
                     <div
                         onClick={onClick}
                         className={cn(
-                            "relative flex flex-col p-4 rounded-3xl bg-card border shadow-sm hover:shadow-md transition-all",
+                            "relative flex flex-col p-4 rounded-3xl bg-card border shadow-sm hover:shadow-md transition-all overflow-hidden",
                             "w-full h-auto min-h-[160px] space-y-3",
                             allCompleted && "opacity-70",
                             onClick && "cursor-pointer hover:border-primary/50"
                         )}>
+                        {/* Vertical Fill Animation */}
+                        {subtasks.length > 0 && (
+                            <div
+                                className={cn(
+                                    "absolute bottom-0 left-0 right-0 bg-primary/10 transition-all duration-500 ease-out pointer-events-none",
+                                    allCompleted && "bg-primary/20"
+                                )}
+                                style={{ height: `${(subtasks.filter(s => s.completed).length / subtasks.length) * 100}%` }}
+                            />
+                        )}
+
                         {/* Header */}
                         <div className="flex items-start justify-between gap-2">
                             <div className="flex items-center gap-2">

@@ -69,6 +69,9 @@ export async function getTasks(): Promise<TodosResponse> {
           currentTouches: item.currentTouches || 0,
           createdAt: String(item.createdAt),
           emoji: item.emoji,
+          unit: item.unit,
+          color: item.color,
+          frequency: item.frequency,
         });
       } else {
         // Assume 'todo' or 'task' or undefined is a Task
@@ -282,7 +285,7 @@ export async function createTask(input: CreateTaskInput): Promise<TodoActionResp
   }
 }
 
-export async function createSubtask(taskId: string, content: string, requiredTouches: number = 1, emoji?: string): Promise<TodoActionResponse> {
+export async function createSubtask(taskId: string, content: string, requiredTouches: number = 1, emoji?: string, unit?: string, color?: string, frequency?: number[]): Promise<TodoActionResponse> {
   try {
     const userId = await getCurrentUserId();
     const subtaskId = `SUBTASK#${crypto.randomUUID()}`;
@@ -297,6 +300,9 @@ export async function createSubtask(taskId: string, content: string, requiredTou
       completed: false,
       createdAt: new Date().toISOString(),
       emoji,
+      unit,
+      color,
+      frequency,
       type: 'subtask'
     };
 
@@ -311,6 +317,53 @@ export async function createSubtask(taskId: string, content: string, requiredTou
   } catch (error) {
     console.error("Failed to create subtask:", error);
     return { success: false, error: "Failed to create subtask" };
+  }
+}
+
+export async function createOrphanSubtask(content: string, requiredTouches: number = 1, emoji?: string, unit?: string, color?: string, frequency?: number[]): Promise<TodoActionResponse> {
+  try {
+    const userId = await getCurrentUserId();
+
+    // 1. Find existing "Daily Inbox" task
+    const { tasks } = await getTasks();
+    let inboxTask = tasks.find(t => t.content === "Daily Inbox" && t.recurrence?.type === 'daily');
+
+    let taskId = inboxTask?.taskId;
+
+    // 2. If not found, create it
+    if (!taskId) {
+      const newTaskId = crypto.randomUUID();
+      const createdAt = new Date().toISOString();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const newTask = {
+        userId,
+        todoId: newTaskId,
+        content: "Daily Inbox",
+        completed: false,
+        createdAt,
+        projectId: "inbox", // Default to inbox project
+        emoji: "📥",
+        recurrence: { type: 'daily' }, // Recur daily so it's always "today"
+        dueDate: today.toISOString(),
+        type: 'task'
+      };
+
+      await dynamoDb.send(new PutCommand({
+        TableName: TABLE_NAME,
+        Item: newTask
+      }));
+
+      taskId = newTaskId;
+    }
+
+    // 3. Create the subtask linked to this task
+    return await createSubtask(taskId, content, requiredTouches, emoji, unit, color, frequency);
+
+  } catch (error) {
+    console.error("Failed to create orphan subtask:", error);
+    return { success: false, error: "Failed to create orphan subtask" };
   }
 }
 
@@ -522,6 +575,10 @@ export async function updateProject(input: UpdateProjectInput): Promise<TodoActi
     if (input.color !== undefined) {
       updateExpression += ", color = :color";
       expressionAttributeValues[":color"] = input.color;
+    }
+    if (input.frequency !== undefined) {
+      updateExpression += ", frequency = :frequency";
+      expressionAttributeValues[":frequency"] = input.frequency;
     }
 
     const command = new UpdateCommand({

@@ -138,3 +138,10 @@ export {
   DrawerTitle,
   DrawerDescription
 } from "./ui/drawer"
+
+export {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverAnchor
+} from "./ui/popover"

@@ -25,6 +25,9 @@ export interface Subtask {
   currentTouches: number;
   createdAt: string;
   emoji?: string;
+  unit?: string;
+  color?: string;
+  frequency?: number[]; // 0-6, where 0 is Sunday
 }
 
 export interface Task {
@@ -112,6 +115,9 @@ export interface UpdateSubtaskInput {
   currentTouches?: number;
   requiredTouches?: number;
   emoji?: string;
+  unit?: string;
+  color?: string;
+  frequency?: number[];
 }
 
 export interface UpdateProjectInput {
