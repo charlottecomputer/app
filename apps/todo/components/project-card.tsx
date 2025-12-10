@@ -37,7 +37,7 @@ export function ProjectCard({ project, tasks, projects = [] }: ProjectCardProps)
 
     return (
         <>
-            <div className="flex flex-col gap-4 p-6 rounded-3xl bg-card border shadow-sm group relative">
+            <div className="flex flex-col gap-4 p-6  rounded-3xl bg-card border shadow-sm group relative">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xl">

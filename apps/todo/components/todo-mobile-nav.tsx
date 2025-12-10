@@ -11,19 +11,20 @@ export function TodoMobileNav({ user }: { user?: any }) {
 
     const items: MobileDockItem[] = [
         {
+            id: "projects",
+            label: "Projects",
+            icon: "sun",
+            href: "/today",
+            active: pathname.startsWith("/projects")
+        },
+        {
             id: "today",
             label: "Today",
             icon: "calendar",
             href: "/",
             active: pathname === "/"
         },
-        {
-            id: "projects",
-            label: "Projects",
-            icon: "apps",
-            href: "/projects",
-            active: pathname.startsWith("/projects")
-        },
+
         {
             id: "add",
             label: "Add Task",

@@ -1,8 +1,6 @@
 import { getTasks } from "@/actions/todo-actions";
 import { getUserProfile } from "@/actions/user-actions";
 import { TodayView } from "@/components/today-view";
-import { ProjectCard } from "@/components/project-card";
-import { ProjectsSection } from "@/components/projects-section";
 import { Text } from "@aliveui";
 import { redirect } from "next/navigation";
 import { Task } from "@/types/todo";
@@ -43,8 +41,6 @@ export default async function DashboardPage() {
         <TodayView tasks={tasks} projects={projects} />
       </section>
 
-      {/* Projects Grid */}
-      <ProjectsSection projects={projects} tasksByProject={tasksByProject} />
     </div>
   );
 }

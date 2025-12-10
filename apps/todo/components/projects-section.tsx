@@ -10,15 +10,16 @@ import { Plus } from "lucide-react"
 interface ProjectsSectionProps {
     projects: Project[]
     tasksByProject: Record<string, Task[]>
+    title?: string
 }
 
-export function ProjectsSection({ projects, tasksByProject }: ProjectsSectionProps) {
+export function ProjectsSection({ projects, tasksByProject, title = "Projects" }: ProjectsSectionProps) {
     const [showCreateForm, setShowCreateForm] = useState(false)
 
     return (
         <section className="space-y-4">
             <div className="flex items-center justify-between">
-                <Text variant="bold" className="text-2xl font-bold">Projects</Text>
+                <Text variant="bold" className="text-2xl font-bold">{title}</Text>
                 <Button
                     variant="outline"
                     size="sm"
