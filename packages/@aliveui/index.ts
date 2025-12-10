@@ -1,3 +1,5 @@
+import { MobileNavigationText, mobileNavigationVariants } from "@aliveui/mobile/navigation";
+
 export * from "./lib/utils";
 export * from "./hooks/use-mobile";
 export * from "./ui/scroll-reveal-text";
@@ -145,3 +147,16 @@ export {
   PopoverContent,
   PopoverAnchor
 } from "./ui/popover"
+
+export { SmileyProgress } from "./components/smiley-progress"
+export { AppLauncher } from "./pages/site/app-launcher"
+export { NavUser } from "./pages/site/nav-user"
+export { NavMain } from "./pages/site/nav-main"
+
+export {
+  MobileNavigation,
+  MobileNavigationSeparator,
+  MobileNavigationText,
+  mobileNavigationVariants,
+} from "./ui/mobile/navigation"
+export { MobileDock, type MobileDockItem } from "./ui/mobile/mobile-dock"

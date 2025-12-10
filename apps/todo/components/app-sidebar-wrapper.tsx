@@ -1,8 +1,15 @@
 
-
 import { type IconName } from "@aliveui"
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@aliveui"
-import { NavMain } from "@aliveui/pages/site/nav-main"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  NavMain
+} from "@aliveui"
 
 export function AppSidebar({ navMain, user, ...props }) {
 

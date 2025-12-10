@@ -1,12 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { Button, Text } from "@aliveui"
 import { Icon } from "@aliveui"
-import { getTasks } from "@/actions/todo-actions"
-import type { Project, Task, Subtask } from "@/types/todo"
+import type { Subtask } from "@/types/todo"
 import { SubtaskCube } from "@/components/subtask-cube"
-import { Plus } from "lucide-react"
+import { useTodos } from "@/hooks/use-todos"
 
 import {
   Drawer,
@@ -20,70 +19,26 @@ import { AddHabitForm } from "@/components/add-habit-form"
 
 export default function TodayPage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [projects, setProjects] = useState<Project[]>([])
-  const [todaySubtasks, setTodaySubtasks] = useState<Subtask[]>([])
+  const { todayTasks, refreshTasks } = useTodos()
 
-  const loadData = async () => {
-    try {
-      const response = await getTasks()
-      if (response.projects) {
-        setProjects(response.projects)
+  const todaySubtasks = useMemo(() => {
+    const subtasks: Subtask[] = []
+    const today = new Date()
+    const dayOfWeek = today.getDay() // 0 = Sunday
+
+    todayTasks.forEach(task => {
+      if (task.subtasks) {
+        task.subtasks.forEach(subtask => {
+          // If frequency is defined, check if today is included
+          // If frequency is undefined, assume daily (show every day)
+          if (!subtask.frequency || subtask.frequency.includes(dayOfWeek)) {
+            subtasks.push(subtask)
+          }
+        })
       }
-      if (response.tasks) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const todayTasks = response.tasks.filter(task => {
-          // Check due date
-          if (task.dueDate) {
-            const dueDate = new Date(task.dueDate);
-            dueDate.setHours(0, 0, 0, 0);
-            if (dueDate.getTime() === today.getTime()) return true;
-          }
-
-          // Check recurrence
-          if (task.recurrence) {
-            const { type, days } = task.recurrence;
-            const dayOfWeek = today.getDay();
-
-            if (type === 'daily') return true;
-            if (type === 'weekdays') return dayOfWeek >= 1 && dayOfWeek <= 5;
-            if (type === 'weekly' && days?.includes(dayOfWeek)) return true;
-            if (type === 'monthly') return today.getDate() === (task.recurrence.dayOfMonth || new Date(task.createdAt).getDate());
-            if (type === 'yearly') {
-              const created = new Date(task.createdAt);
-              return today.getDate() === created.getDate() && today.getMonth() === created.getMonth();
-            }
-          }
-
-          return false;
-        });
-
-        // Flatten subtasks and filter by frequency
-        const subtasks: Subtask[] = [];
-        const dayOfWeek = today.getDay(); // 0 = Sunday
-
-        todayTasks.forEach(task => {
-          if (task.subtasks) {
-            task.subtasks.forEach(subtask => {
-              // If frequency is defined, check if today is included
-              // If frequency is undefined, assume daily (show every day)
-              if (!subtask.frequency || subtask.frequency.includes(dayOfWeek)) {
-                subtasks.push(subtask);
-              }
-            });
-          }
-        });
-        setTodaySubtasks(subtasks);
-      }
-    } catch (error) {
-      console.error("Failed to load data:", error)
-    }
-  }
-
-  useEffect(() => {
-    loadData()
-  }, [])
+    })
+    return subtasks
+  }, [todayTasks])
 
   return (
     <div className="flex flex-col h-full gap-4 max-w-5xl mx-auto py-8 px-4">
@@ -114,7 +69,7 @@ export default function TodayPage() {
                     onCancel={() => setIsDrawerOpen(false)}
                     onSuccess={() => {
                       setIsDrawerOpen(false)
-                      loadData()
+                      refreshTasks()
                     }}
                   />
                 </div>
@@ -137,7 +92,7 @@ export default function TodayPage() {
               <SubtaskCube
                 key={subtask.subtaskId}
                 subtask={subtask}
-                onUpdate={loadData}
+                onUpdate={refreshTasks}
               />
             ))}
           </div>
@@ -146,3 +101,4 @@ export default function TodayPage() {
     </div>
   )
 }
+

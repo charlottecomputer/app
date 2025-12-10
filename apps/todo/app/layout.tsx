@@ -4,7 +4,10 @@ import "./globals.css";
 import { AppShell, Text } from "@aliveui";
 import { AppSidebar, sidebarData } from "@/components/app-sidebar-wrapper";
 import { getUserProfile } from "@/actions/user-actions";
-import { getDailyProgress } from "@/actions/todo-actions";
+import { getTasks } from "@/actions/todo-actions";
+import { TodoProvider } from "@/context/todo-context";
+import { SiteHeader } from "@/components/site-header";
+import { TodoMobileNav } from "@/components/todo-mobile-nav";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -35,23 +38,30 @@ export default async function RootLayout({
     user = undefined;
   }
 
-  const dailyProgress = await getDailyProgress();
+  // Fetch initial tasks data
+  const initialData = await getTasks();
 
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <AppShell
-          user={user}
-          navMain={sidebarData.navMain}
-          appName="Todo"
-          sidebar={<AppSidebar navMain={sidebarData.navMain} user={user} />}
-          dailyProgress={{
-            current: dailyProgress.completed,
-            total: dailyProgress.total
-          }}
-        >
-          {children}
-        </AppShell>
+        <TodoProvider initialData={initialData}>
+          <AppShell
+            user={user}
+            navMain={sidebarData.navMain}
+            appName="Todo"
+            sidebar={<AppSidebar navMain={sidebarData.navMain} user={user} />}
+            header={
+              <SiteHeader
+                user={user}
+                navMain={sidebarData.navMain}
+                appName="Todo"
+              />
+            }
+            mobileNav={<TodoMobileNav user={user} />}
+          >
+            {children}
+          </AppShell>
+        </TodoProvider>
       </body>
     </html>
   );

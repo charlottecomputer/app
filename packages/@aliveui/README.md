@@ -1,23 +1,17 @@
-# registry-template
+# charlotte.computer
 
-You can use the `shadcn` CLI to run your own component registry. Running your own
-component registry allows you to distribute your custom components, hooks, pages, and
-other files to any React project.
+People can build their own web 'computers' which is an app that holds a load of their chosen mini-apps. For example I might have a 'productivity' computer that has a todo app, a calendar app, a notes app, etc. My dashboard page would show me in a bento grid todays top todos, calendar events, etc.
 
-> [!IMPORTANT]  
-> This template uses Tailwind v4. For Tailwind v3, see [registry-template-v3](https://github.com/shadcn-ui/registry-template-v3).
+I can access the Todos app as a standalone app, on the web, or as a pwa on my phone.
 
-## Getting Started
+This is a monorepo to hold:
 
-This is a template for creating a custom registry using Next.js.
+- apps/web: The website and entry point for all users. This contains a dashboard much like icloud where you can see todays most recent todos, calendar events, etc.
+- apps/todo: The todo app
+- packages/aliveui: a ui library to use across all mini apps
 
-- The template uses a `registry.json` file to define components and their files.
-- The `shadcn build` command is used to build the registry.
-- The registry items are served as static files under `public/r/[name].json`.
-- The template also includes a route handler for serving registry items.
-- Every registry item are compatible with the `shadcn` CLI.
-- We have also added v0 integration using the `Open in v0` api.
+All UI in the apps uses @aliveui and the variables in globals.css
 
-## Documentation
+This app is completely mobile first in its design, desktop is just a larger version of the mobile app.
 
-Visit the [shadcn documentation](https://ui.shadcn.com/docs/registry) to view the full documentation.
+The apps are to feel like mobile games. Lots of fun animations, a 3D style, and a lot of polish and FUN.

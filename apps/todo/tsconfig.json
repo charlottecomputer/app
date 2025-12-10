@@ -11,6 +11,8 @@
       "@/actions/*": ["./actions/*"],
       "@/types/*": ["./types/*"],
       "@/lib/*": ["./lib/*"],
+      "@/context/*": ["./context/*"],
+      "@/hooks/*": ["./hooks/*"]
     }
   },
   "include": [

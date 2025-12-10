@@ -35,15 +35,18 @@ interface AppShellProps {
     current: number
     total: number
   }
+  header?: React.ReactNode
+  mobileNav?: React.ReactNode
+  footer?: React.ReactNode
 }
 
-export function AppShell({ children, user, navMain, sidebar, collapsible = "offcanvas", backgroundAnimated = false, appName, dailyProgress }: AppShellProps) {
+export function AppShell({ children, user, navMain, sidebar, collapsible = "offcanvas", backgroundAnimated = false, appName, dailyProgress, header, mobileNav, footer }: AppShellProps) {
   const scrollRef = React.useRef<HTMLElement>(null)
 
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="flex flex-col h-svh w-svw bg-sidebar ">
-        <SiteHeader user={user} navMain={navMain} appName={appName} />
+        {header ? header : <SiteHeader user={user} navMain={navMain} appName={appName} dailyProgress={dailyProgress} />}
         {dailyProgress && (
           <div className="border-b bg-sidebar-accent/50">
             <DailyProgressBar current={dailyProgress.current} total={dailyProgress.total} />
@@ -77,7 +80,8 @@ export function AppShell({ children, user, navMain, sidebar, collapsible = "offc
           </SidebarInset>
           {/* <RightSidebar /> */}
         </div>
-        <SiteFooter />
+        {footer !== undefined ? footer : (mobileNav ? <div className="hidden md:block w-full"><SiteFooter /></div> : <SiteFooter />)}
+        {mobileNav}
       </div>
     </SidebarProvider>
   )
