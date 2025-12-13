@@ -55,6 +55,8 @@ export async function getObjectives(): Promise<{ objectives: Objective[]; error?
                     name: String(item.name),
                     icon: item.icon,
                     color: item.color,
+                    startDate: item.startDate,
+                    endDate: item.endDate,
                     createdAt: String(item.createdAt),
                     type: 'objective'
                 });
@@ -86,6 +88,8 @@ export async function createObjective(input: createObjectiveInput): Promise<KeyR
             name: input.name.trim(),
             icon: input.icon,
             color: input.color,
+            startDate: input.startDate,
+            endDate: input.endDate,
             createdAt: new Date().toISOString(),
             type: 'objective'
         };
@@ -139,6 +143,16 @@ export async function updateObjective(input: UpdateObjectiveInput): Promise<KeyR
         if (input.color !== undefined) {
             updateExpression += ", color = :color";
             expressionAttributeValues[":color"] = input.color;
+        }
+
+        if (input.startDate !== undefined) {
+            updateExpression += ", startDate = :startDate";
+            expressionAttributeValues[":startDate"] = input.startDate;
+        }
+
+        if (input.endDate !== undefined) {
+            updateExpression += ", endDate = :endDate";
+            expressionAttributeValues[":endDate"] = input.endDate;
         }
 
         const command = new UpdateCommand({

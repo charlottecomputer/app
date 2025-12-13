@@ -28,6 +28,8 @@ export function AddObjectiveForm({ onSuccess, onCancel }: { onSuccess?: () => vo
     const [name, setName] = useState("")
     const [icon, setIcon] = useState("target")
     const [color, setColor] = useState(COLORS[0])
+    const [startDate, setStartDate] = useState("")
+    const [endDate, setEndDate] = useState("")
     const [isLoading, setIsLoading] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -40,8 +42,12 @@ export function AddObjectiveForm({ onSuccess, onCancel }: { onSuccess?: () => vo
                 name,
                 icon,
                 color,
+                startDate: startDate || undefined,
+                endDate: endDate || undefined,
             })
             setName("")
+            setStartDate("")
+            setEndDate("")
             onSuccess?.()
         } catch (error) {
             console.error("Failed to create objective:", error)
@@ -80,6 +86,31 @@ export function AddObjectiveForm({ onSuccess, onCancel }: { onSuccess?: () => vo
                             placeholder="Name your objective..."
                             className="flex-1 bg-transparent border-none text-lg font-medium placeholder:text-foreground/50 focus-visible:ring-0 px-0 h-auto"
                         />
+                    </div>
+                </div>
+
+                {/* Dates */}
+                <div className="space-y-2">
+                    <Label className="text-base font-semibold">Timeline</Label>
+                    <div className="flex gap-4">
+                        <div className="flex-1 space-y-1">
+                            <Label className="text-xs text-muted-foreground">Start Date</Label>
+                            <Input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                className="w-full"
+                            />
+                        </div>
+                        <div className="flex-1 space-y-1">
+                            <Label className="text-xs text-muted-foreground">End Date</Label>
+                            <Input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className="w-full"
+                            />
+                        </div>
                     </div>
                 </div>
 

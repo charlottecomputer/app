@@ -54,6 +54,8 @@ export interface Objective {
   icon?: string;
   color?: string;
   createdAt: string;
+  startDate?: string;
+  endDate?: string;
   type: 'objective';
 }
 
@@ -94,6 +96,8 @@ export interface createObjectiveInput {
   name: string;
   icon?: string;
   color?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface UpdateKeyResultInput {
@@ -118,6 +122,8 @@ export interface UpdateObjectiveInput {
   name?: string;
   icon?: string;
   color?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface DeleteKeyResultInput {

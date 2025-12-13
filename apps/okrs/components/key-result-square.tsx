@@ -17,8 +17,9 @@ import {
     DropdownMenuContent,
     DropdownMenuItem
 } from "@aliveui"
-import { Pencil, Trash, Flag, Repeat, MoreHorizontal } from "lucide-react"
+import { Plus, Check, X, Pencil, Trash, Flag, ChevronDown, MoreHorizontal, Repeat } from "lucide-react"
 import { EditKeyResultDrawer } from "./edit-key-result-drawer"
+import { getRecurrenceLabel } from "@/lib/recurrence"
 
 interface KeyResultSquareProps extends KeyResult {
     objectives?: Objective[]
@@ -174,6 +175,12 @@ export function KeyResultSquare({ objectives = [], onClick, ...keyResult }: KeyR
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
+                                {keyResult.recurrence && (
+                                    <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+                                        <Repeat className="w-3 h-3" />
+                                        <span>{getRecurrenceLabel(keyResult.recurrence)}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

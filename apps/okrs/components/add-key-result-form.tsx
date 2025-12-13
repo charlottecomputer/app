@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import { createKeyResult, updateKeyResult } from "@/actions/key-results-actions"
 import { Button, Input, Label, cn, IconPicker, Icon } from "@aliveui"
 import { Plus, Check, X } from "lucide-react"
+import { TaskRecurrencePicker } from "./task-recurrence-picker"
+import { Recurrence } from "@/types/key-results"
 
 const COLORS = [
     "#FF6B6B", // Red
@@ -38,7 +40,7 @@ export function AddKeyResultForm({ onSuccess, onCancel, defaultProjectId, initia
     const [mode, setMode] = useState<'single' | 'count'>('single')
     const [target, setTarget] = useState(1)
     const [unit, setUnit] = useState("times")
-    const [frequency, setFrequency] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]) // Default to all days
+    const [recurrence, setRecurrence] = useState<Recurrence | undefined>(undefined)
     const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
@@ -49,7 +51,7 @@ export function AddKeyResultForm({ onSuccess, onCancel, defaultProjectId, initia
             setMode((initialData.requiredTouches || 1) > 1 ? 'count' : 'single')
             setTarget(initialData.requiredTouches || 1)
             setUnit(initialData.unit || "times")
-            setFrequency(initialData.frequency || [0, 1, 2, 3, 4, 5, 6])
+            setRecurrence(initialData.recurrence)
         }
     }, [initialData])
 
@@ -66,12 +68,7 @@ export function AddKeyResultForm({ onSuccess, onCancel, defaultProjectId, initia
                 icon: emoji,
                 unit,
                 color,
-                frequency,
-                recurrence: {
-                    type: 'weekly' as const,
-                    days: frequency,
-                    basis: 'scheduled' as const
-                }
+                recurrence
             }
 
             let result;
@@ -102,21 +99,7 @@ export function AddKeyResultForm({ onSuccess, onCancel, defaultProjectId, initia
         }
     }
 
-    const toggleDay = (dayIndex: number) => {
-        setFrequency(prev =>
-            prev.includes(dayIndex)
-                ? prev.filter(d => d !== dayIndex)
-                : [...prev, dayIndex]
-        )
-    }
 
-    const toggleAllDays = () => {
-        if (frequency.length === 7) {
-            setFrequency([])
-        } else {
-            setFrequency([0, 1, 2, 3, 4, 5, 6])
-        }
-    }
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6 h-full flex flex-col">
@@ -228,49 +211,14 @@ export function AddKeyResultForm({ onSuccess, onCancel, defaultProjectId, initia
                     )}
                 </div>
 
-                {/* Frequency */}
+                {/* Recurrence */}
                 <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <Label className="text-base font-semibold">Frequency</Label>
-                        <div className="flex bg-muted rounded-lg p-1">
-                            <button
-                                type="button"
-                                onClick={toggleAllDays}
-                                className={cn(
-                                    "px-3 py-1 text-xs font-medium rounded-md transition-all",
-                                    frequency.length === 7 ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                Every Day
-                            </button>
-                        </div>
-                    </div>
-                    <div className="flex justify-between gap-1">
-                        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
-                            // Adjust index so 0 is Monday for display, but logic uses 0=Sunday if that's standard JS Date
-                            // JS Date: 0=Sun, 1=Mon, ..., 6=Sat
-                            // Let's map display index to JS Date index
-                            // Display: Mon(0), Tue(1), ..., Sun(6)
-                            // JS Date: Mon(1), Tue(2), ..., Sun(0)
-                            const jsDayIndex = i === 6 ? 0 : i + 1
-                            const isSelected = frequency.includes(jsDayIndex)
-
-                            return (
-                                <button
-                                    key={day}
-                                    type="button"
-                                    onClick={() => toggleDay(jsDayIndex)}
-                                    className={cn(
-                                        "flex-1 h-10 rounded-lg flex items-center justify-center text-xs font-medium border-2 transition-all",
-                                        isSelected
-                                            ? "border-black bg-primary/20"
-                                            : "border-transparent bg-muted text-muted-foreground hover:bg-muted/80"
-                                    )}
-                                >
-                                    {day}
-                                </button>
-                            )
-                        })}
+                    <Label className="text-base font-semibold">Frequency</Label>
+                    <div className="flex items-center gap-2">
+                        <TaskRecurrencePicker
+                            recurrence={recurrence}
+                            onRecurrenceChange={setRecurrence}
+                        />
                     </div>
                 </div>
             </div>
