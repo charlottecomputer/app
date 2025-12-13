@@ -1,5 +1,5 @@
 {
-  "name": "todo",
+  "name": "okrs",
   "version": "0.1.0",
   "type": "module",
   "private": true,
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@aliveui": "workspace:^",
+    "@repo/store": "workspace:*",
     "@aws-sdk/client-cognito-identity-provider": "^3.936.0",
     "@aws-sdk/client-dynamodb": "^3.936.0",
     "@aws-sdk/lib-dynamodb": "^3.936.0",

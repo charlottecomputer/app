@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { createOrphanSubtask } from "@/actions/key-results-actions"
+import { createKeyResult } from "@/actions/key-results-actions"
 import { Button, Input, Label, cn } from "@aliveui"
 import { Plus, Check, X } from "lucide-react"
 
@@ -41,14 +41,19 @@ export function AddHabitForm({ onSuccess, onCancel }: { onSuccess?: () => void, 
 
         setIsLoading(true)
         try {
-            await createOrphanSubtask(
+            await createKeyResult({
                 content,
-                mode === 'single' ? 1 : target,
-                emoji,
+                requiredTouches: mode === 'single' ? 1 : target,
+                icon: emoji,
                 unit,
                 color,
-                frequency
-            )
+                frequency,
+                recurrence: {
+                    type: 'weekly',
+                    days: frequency,
+                    basis: 'scheduled'
+                }
+            })
             setContent("")
             setTarget(1)
             onSuccess?.()

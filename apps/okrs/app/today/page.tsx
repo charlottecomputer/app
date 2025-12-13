@@ -3,9 +3,9 @@
 import { useState, useMemo } from "react"
 import { Button, Text } from "@aliveui"
 import { Icon } from "@aliveui"
-import type { Subtask } from "@/types/todo"
+import type { Subtask } from "@/types/okr"
 import { SubtaskCube } from "@/components/subtask-cube"
-import { useTodos } from "@/hooks/use-todos"
+import { useKeyResults } from "@/hooks/use-key-results"
 
 import {
   Drawer,
@@ -19,16 +19,16 @@ import { AddHabitForm } from "@/components/add-habit-form"
 
 export default function TodayPage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const { todayTasks, refreshTasks } = useTodos()
+  const { keyResults, refreshKeyResults } = useKeyResults()
 
   const todaySubtasks = useMemo(() => {
     const subtasks: Subtask[] = []
     const today = new Date()
     const dayOfWeek = today.getDay() // 0 = Sunday
 
-    todayTasks.forEach(task => {
-      if (task.subtasks) {
-        task.subtasks.forEach(subtask => {
+    keyResults.forEach(keyResult => {
+      if (keyResult.subtasks) {
+        keyResult.subtasks.forEach(subtask => {
           // If frequency is defined, check if today is included
           // If frequency is undefined, assume daily (show every day)
           if (!subtask.frequency || subtask.frequency.includes(dayOfWeek)) {
@@ -38,7 +38,7 @@ export default function TodayPage() {
       }
     })
     return subtasks
-  }, [todayTasks])
+  }, [keyResults])
 
   return (
     <div className="flex flex-col h-full gap-4 max-w-5xl mx-auto py-8 px-4">
@@ -69,7 +69,7 @@ export default function TodayPage() {
                     onCancel={() => setIsDrawerOpen(false)}
                     onSuccess={() => {
                       setIsDrawerOpen(false)
-                      refreshTasks()
+                      refreshKeyResults()
                     }}
                   />
                 </div>
@@ -88,13 +88,13 @@ export default function TodayPage() {
           </div>
         ) : (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
-            {todaySubtasks.map(subtask => (
+            {/* {todaySubtasks.map(subtask => (
               <SubtaskCube
                 key={subtask.subtaskId}
                 subtask={subtask}
                 onUpdate={refreshTasks}
               />
-            ))}
+            ))} */}
           </div>
         )}
       </div>

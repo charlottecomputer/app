@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react"
 import { getKeyResults } from "@/actions/key-results-actions"
-import type { KeyResult, Objective, KeyResultResponse } from "@/types/key-results"
+import type { KeyResult, Objective, KeyResultsResponse } from "@/types/key-results"
 
 interface KeyResultsContextType {
     keyResults: KeyResult[]
@@ -18,7 +18,7 @@ export function KeyResultsProvider({
     initialData
 }: {
     children: React.ReactNode
-    initialData?: KeyResultResponse
+    initialData?: KeyResultsResponse
 }) {
     const [keyResults, setKeyResults] = useState<KeyResult[]>(initialData?.keyResults || [])
     const [objectives, setObjectives] = useState<Objective[]>(initialData?.objectives || [])

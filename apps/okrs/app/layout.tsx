@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { AppShell, Text } from "@aliveui";
+import { AppShell } from "@aliveui";
 import { AppSidebar, sidebarData } from "@/components/app-sidebar-wrapper";
 import { getUserProfile } from "@/actions/user-actions";
-import { getTasks } from "@/actions/todo-actions";
-import { TodoProvider } from "@/context/todo-context";
+import { getKeyResults } from "@/actions/key-results-actions";
+import { KeyResultsProvider } from "@/context/key-results-context";
 import { SiteHeader } from "@/components/site-header";
-import { TodoMobileNav } from "@/components/todo-mobile-nav";
+import { MobileNav } from "@/components/mobile-nav";
+import { ReduxProvider } from "@repo/store";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -19,8 +20,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Floslate Todo",
-  description: "Manage your tasks with Floslate Todo",
+  title: "Floslate OKRs",
+  description: "Manage your objectives and key results",
   manifest: "/manifest.json",
 };
 
@@ -38,30 +39,32 @@ export default async function RootLayout({
     user = undefined;
   }
 
-  // Fetch initial tasks data
-  const initialData = await getTasks();
+  // Fetch initial data
+  const initialData = await getKeyResults();
 
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <TodoProvider initialData={initialData}>
-          <AppShell
-            user={user}
-            navMain={sidebarData.navMain}
-            appName="Todo"
-            sidebar={<AppSidebar navMain={sidebarData.navMain} user={user} />}
-            header={
-              <SiteHeader
-                user={user}
-                navMain={sidebarData.navMain}
-                appName="Todo"
-              />
-            }
-            mobileNav={<TodoMobileNav user={user} />}
-          >
-            {children}
-          </AppShell>
-        </TodoProvider>
+        <ReduxProvider>
+          <KeyResultsProvider initialData={initialData}>
+            <AppShell
+              user={user}
+              navMain={sidebarData.navMain}
+              appName="OKRs"
+              sidebar={<AppSidebar navMain={sidebarData.navMain} user={user} />}
+              header={
+                <SiteHeader
+                  user={user}
+                  navMain={sidebarData.navMain}
+                  appName="OKRs"
+                />
+              }
+              mobileNav={<MobileNav user={user} />}
+            >
+              {children}
+            </AppShell>
+          </KeyResultsProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

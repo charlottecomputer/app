@@ -5,29 +5,28 @@ import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { AddHabitForm } from "./add-habit-form"
 
-export function TodoMobileNav({ user }: { user?: any }) {
+export function MobileNav({ user }: { user?: any }) {
     const pathname = usePathname()
     const [open, setOpen] = useState(false)
 
     const items: MobileDockItem[] = [
         {
-            id: "projects",
-            label: "Projects",
-            icon: "sun",
-            href: "/today",
-            active: pathname.startsWith("/projects")
-        },
-        {
             id: "today",
             label: "Today",
             icon: "calendar",
-            href: "/",
-            active: pathname === "/"
+            href: "/dashboard",
+            active: pathname === "/dashboard"
         },
-
+        {
+            id: "objectives",
+            label: "Objectives",
+            icon: "sun",
+            href: "/dashboard/objectives",
+            active: pathname.startsWith("/dashboard/objectives")
+        },
         {
             id: "add",
-            label: "Add Task",
+            label: "Add Key Result",
             type: "action",
             icon: "plus",
             onClick: () => {
@@ -35,11 +34,11 @@ export function TodoMobileNav({ user }: { user?: any }) {
             }
         },
         {
-            id: "goals",
-            label: "Goals",
+            id: "inbox",
+            label: "Inbox",
             icon: "todo",
-            href: "/goals",
-            active: pathname.startsWith("/goals")
+            href: "/inbox",
+            active: pathname.startsWith("/inbox")
         },
         {
             id: "profile",
@@ -57,7 +56,7 @@ export function TodoMobileNav({ user }: { user?: any }) {
             <Drawer open={open} onOpenChange={setOpen}>
                 <DrawerContent>
                     <DrawerHeader>
-                        <DrawerTitle>New Habit</DrawerTitle>
+                        <DrawerTitle>New Key Result</DrawerTitle>
                     </DrawerHeader>
                     <div className="p-4 pb-8 h-[80vh]">
                         <AddHabitForm onSuccess={() => setOpen(false)} />

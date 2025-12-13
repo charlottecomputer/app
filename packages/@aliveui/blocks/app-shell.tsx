@@ -55,28 +55,29 @@ export function AppShell({ children, user, navMain, sidebar, collapsible = "offc
         <div className="flex flex-1 bg-sidebar overflow-hidden">
           {sidebar ? sidebar : <AppSidebar navMain={navMain} user={user} collapsible={collapsible} />}
           <SidebarInset className="flex flex-col bg-sidebar flex-1 overflow-hidden  p-[1px] relative">
-            <Monoco
-              borderRadius={45}
-              smoothing={1}
-              clip={true}
-              className="flex-1 h-full w-full relative overflow-hidden"
-            >
-              {backgroundAnimated ? (
-                <>
-                  <div className="relative overflow-hidden shadow-inset shadow-[inset_0px_4px_58px_15px_var(--muted)] flex-1 h-full z-10">
-                    <ScrollProvider containerRef={scrollRef}>
-                      <main ref={scrollRef} className="flex-1 h-full w-full overflow-y-scroll !scrollbar-none">
-                        {children}
-                      </main>
-                    </ScrollProvider>
-                  </div>
-                </>
-              ) : (
-                <main className="flex-1 border overflow-y-auto h-full">
+
+            {backgroundAnimated ? (
+              <>
+                <div className="relative overflow-hidden  shadow-inset shadow-[inset_0px_4px_58px_15px_var(--muted)] flex-1 h-full z-10">
+                  <ScrollProvider containerRef={scrollRef}>
+                    <main ref={scrollRef} className="flex-1 h-full w-full overflow-y-scroll !scrollbar-none">
+                      {children}
+                    </main>
+                  </ScrollProvider>
+                </div>
+              </>
+            ) : (
+              <Monoco
+                borderRadius={45}
+                smoothing={1}
+                clip={true}
+                className="flex-1 h-full w-full  relative overflow-hidden "
+              >
+                <main className="flex-1  bg-background overflow-y-auto h-full">
                   {children}
                 </main>
-              )}
-            </Monoco>
+              </Monoco>
+            )}
           </SidebarInset>
           {/* <RightSidebar /> */}
         </div>

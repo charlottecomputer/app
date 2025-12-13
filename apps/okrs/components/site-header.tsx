@@ -16,7 +16,7 @@ import {
 } from "@aliveui"
 import React from "react"
 import Link from "next/link"
-import { useTodos } from "../hooks/use-todos"
+import { useKeyResults } from "../hooks/use-key-results"
 
 export function SiteHeader({
     user,
@@ -31,7 +31,7 @@ export function SiteHeader({
 }) {
     const { toggleSidebar } = useSidebar()
     const [open, setOpen] = React.useState(false)
-    const { dailyProgress } = useTodos()
+    const { dailyProgress } = useKeyResults()
 
     React.useEffect(() => {
         const down = (e: KeyboardEvent) => {

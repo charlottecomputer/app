@@ -16,32 +16,35 @@ export interface Recurrence {
   monthOfYear?: number;
 }
 
-
-
 export interface KeyResult {
   userId: string;
   keyResultId: string;
   content: string;
   completed: boolean;
   createdAt: string;
+
+  // Progress tracking (formerly subtask logic)
   requiredTouches: number;
   currentTouches: number;
-  emoji?: string;
-  unit?: string;
-  color?: string;
-  // New fields
-  projectId?: string;
+
+  // Visuals
   icon?: string;
+  color?: string;
+  unit?: string;
+
+  // Organization
+  projectId?: string; // Maps to Objective ID
+
+  // Scheduling
   recurrence?: Recurrence;
   dueDate?: string; // ISO date string
   priority?: Priority;
   reminders?: string[]; // ISO date strings
-  type: 'task'; // Renamed from 'todo'
 
-  // Subtasks are fetched separately or embedded
-  frequency?: number[]; // 0-6, where 0 is Sunday
+  type: 'keyResult';
 
   lastCompletedAt?: string; // ISO date string
+  frequency?: number[]; // 0-6, where 0 is Sunday
 }
 
 export interface Objective {
@@ -58,13 +61,13 @@ export interface Objective {
 export type KeyResultItem = KeyResult | Objective;
 
 // API Response Types
-export interface KeyResultResponse {
+export interface KeyResultsResponse {
   keyResults: KeyResult[];
-  objectives?: Objective[];
+  objectives: Objective[];
   error?: string;
 }
 
-export interface KeyResultActionResponse {
+export interface KeyResultsActionResponse {
   success: boolean;
   error?: string;
   data?: any;
@@ -79,10 +82,15 @@ export interface CreateKeyResultInput {
   dueDate?: string;
   priority?: Priority;
   reminders?: string[];
-  subtasks?: { content: string; requiredTouches: number; emoji?: string }[];
+  requiredTouches?: number;
+  currentTouches?: number;
+  unit?: string;
+  color?: string;
+  frequency?: number[];
+  lastCompletedAt?: string;
 }
 
-export interface CreateProjectInput {
+export interface createObjectiveInput {
   name: string;
   icon?: string;
   color?: string;
@@ -93,28 +101,20 @@ export interface UpdateKeyResultInput {
   content?: string;
   completed?: boolean;
   icon?: string;
-  objectiveId?: string;
+  projectId?: string; // Objective ID
   recurrence?: Recurrence;
   dueDate?: string;
   priority?: Priority;
   reminders?: string[];
-}
-
-export interface UpdateKeyResultInput {
-  subtaskId: string;
-  keyResultId: string;
-  content?: string;
-  completed?: boolean;
   currentTouches?: number;
   requiredTouches?: number;
-  icon?: string;
   unit?: string;
   color?: string;
   frequency?: number[];
 }
 
 export interface UpdateObjectiveInput {
-  objectiveId: string;
+  projectId: string; // Objective ID
   name?: string;
   icon?: string;
   color?: string;

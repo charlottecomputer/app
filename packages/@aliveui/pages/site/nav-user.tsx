@@ -62,7 +62,7 @@ export function NavUser({
         >
           <Avatar className="h-8 w-8">
             <AvatarImage src={user.avatar} alt={user.name} />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarFallback>CB</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -76,7 +76,7 @@ export function NavUser({
           <div className="flex items-center gap-3 px-2 py-3 text-left">
             <Avatar className="h-12 w-12">
               <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarFallback>CB</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left leading-tight">
               <span className="font-semibold text-base">{user.name}</span>
