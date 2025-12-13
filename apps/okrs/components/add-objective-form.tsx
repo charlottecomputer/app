@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { createObjective } from "@/actions/objective-actions"
-import { Button, Input, Label, cn } from "@aliveui"
+import { Button, Input, Label, cn, IconPicker, Icon } from "@aliveui"
 
 const COLORS = [
     "#FF6B6B", // Red
@@ -22,11 +22,11 @@ const COLORS = [
     "#A04000", // Brown
 ]
 
-const EMOJIS = ["🎯", "🚀", "💼", "📈", "💰", "🏆", "🌟", "🔥", "💡", "🛠️", "🏗️", "🏠"]
+
 
 export function AddObjectiveForm({ onSuccess, onCancel }: { onSuccess?: () => void, onCancel?: () => void }) {
     const [name, setName] = useState("")
-    const [icon, setIcon] = useState("🎯")
+    const [icon, setIcon] = useState("target")
     const [color, setColor] = useState(COLORS[0])
     const [isLoading, setIsLoading] = useState(false)
 
@@ -59,7 +59,7 @@ export function AddObjectiveForm({ onSuccess, onCancel }: { onSuccess?: () => vo
                         <Label className="text-base font-semibold">Objective Name</Label>
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-muted-foreground">Example</span>
-                            <span className="text-lg">🚀</span>
+                            <Icon icon="target" className="w-6 h-6" />
                         </div>
                     </div>
 
@@ -67,19 +67,11 @@ export function AddObjectiveForm({ onSuccess, onCancel }: { onSuccess?: () => vo
                         className="flex items-center gap-3 p-4 rounded-2xl transition-colors"
                         style={{ backgroundColor: color + "40" }} // 25% opacity
                     >
-                        <div className="relative group">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="h-12 w-12 rounded-xl bg-white/50 hover:bg-white/80 shrink-0"
-                                onClick={() => {
-                                    const current = EMOJIS.indexOf(icon)
-                                    setIcon(EMOJIS[(current + 1) % EMOJIS.length])
-                                }}
-                            >
-                                <span className="text-2xl">{icon}</span>
-                            </Button>
+                        <div className="relative group w-12">
+                            <IconPicker
+                                value={icon}
+                                onChange={setIcon}
+                            />
                         </div>
                         <Input
                             autoFocus

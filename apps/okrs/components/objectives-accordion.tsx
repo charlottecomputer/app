@@ -6,7 +6,8 @@ import {
     AccordionItem,
     AccordionTrigger,
     Text,
-    Badge
+    Badge,
+    Icon
 } from "@aliveui"
 import { Objective, KeyResult } from "@/types/key-results"
 import { KeyResultSquare } from "./key-result-square"
@@ -40,7 +41,7 @@ export function ObjectivesAccordion({ objectives, keyResultsByObjective }: Objec
                         <AccordionTrigger className="hover:no-underline py-0 group">
                             <div className="grid grid-cols-[auto_1fr] gap-4 w-full bg-sidebar p-4 rounded-2xl border transition-all group-data-[state=open]:rounded-b-none group-data-[state=open]:border-b-0">
                                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-2xl shrink-0">
-                                    {objective.icon || "🎯"}
+                                    <Icon icon={objective.icon as any || "target"} className="w-6 h-6" />
                                 </div>
                                 <div className="flex flex-col gap-2 min-w-0">
                                     <div className="grid grid-cols-[1fr_auto] gap-2 items-center">

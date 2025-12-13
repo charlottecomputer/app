@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import confetti from "canvas-confetti"
-import { cn } from "@aliveui"
+import { cn, Icon } from "@aliveui"
 import { updateKeyResult, deleteKeyResult } from "@/actions/key-results-actions"
 import { KeyResult, Objective } from "@/types/key-results"
 import {
@@ -138,7 +138,7 @@ export function KeyResultSquare({ objectives = [], onClick, ...keyResult }: KeyR
 
                         {/* Header */}
                         <div className="relative z-10 flex items-start justify-between gap-2">
-                            <div className="text-3xl">{keyResult.icon || "📝"}</div>
+                            <Icon icon={keyResult.icon} className="text-3xl"/>
                             <div className="flex gap-1 items-center">
                                 {keyResult.priority && (
                                     <Flag className={`w-4 h-4 ${getPriorityColor(keyResult.priority)}`} />
@@ -182,7 +182,17 @@ export function KeyResultSquare({ objectives = [], onClick, ...keyResult }: KeyR
                             <h3 className={cn("font-semibold text-lg leading-tight line-clamp-3", isCompleted && "line-through text-muted-foreground")}>
                                 {keyResult.content}
                             </h3>
-                            {keyResult.recurrence && (
+                        
+                        </div>
+
+                        {/* Footer / Progress */}
+                        <div className="relative z-10 flex items-center justify-between text-xs text-muted-foreground font-mono">
+                           
+                           <div> <span>{currentTouches} / {requiredTouches}</span>
+                            {requiredTouches > 1 && <span>{Math.round(progress)}%</span>}
+                            </div>
+
+                                {keyResult.recurrence && (
                                 <div className="flex items-center gap-1">
                                     <Badge variant="secondary" className="text-[10px] px-1.5 h-5 font-normal">
                                         {keyResult.recurrence.type === 'weekly' && keyResult.frequency
@@ -195,12 +205,6 @@ export function KeyResultSquare({ objectives = [], onClick, ...keyResult }: KeyR
                                     </Badge>
                                 </div>
                             )}
-                        </div>
-
-                        {/* Footer / Progress */}
-                        <div className="relative z-10 flex items-center justify-between text-xs text-muted-foreground font-mono">
-                            <span>{currentTouches} / {requiredTouches}</span>
-                            {requiredTouches > 1 && <span>{Math.round(progress)}%</span>}
                         </div>
 
                     </motion.div>

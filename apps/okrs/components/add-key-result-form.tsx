@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createKeyResult } from "@/actions/key-results-actions"
-import { Button, Input, Label, cn } from "@aliveui"
+import { createKeyResult, updateKeyResult } from "@/actions/key-results-actions"
+import { Button, Input, Label, cn, IconPicker, Icon } from "@aliveui"
 import { Plus, Check, X } from "lucide-react"
 
 const COLORS = [
@@ -23,7 +23,6 @@ const COLORS = [
     "#A04000", // Brown
 ]
 
-const EMOJIS = ["🍎", "💧", "📚", "🏃", "🧘", "💊", "💻", "🧹", "🏋️", "🎨", "🎸", "📝"]
 
 interface AddKeyResultFormProps {
     onSuccess?: () => void
@@ -34,7 +33,7 @@ interface AddKeyResultFormProps {
 
 export function AddKeyResultForm({ onSuccess, onCancel, defaultProjectId, initialData }: AddKeyResultFormProps) {
     const [content, setContent] = useState("")
-    const [emoji, setEmoji] = useState("🍎")
+    const [emoji, setEmoji] = useState("todo")
     const [color, setColor] = useState(COLORS[0])
     const [mode, setMode] = useState<'single' | 'count'>('single')
     const [target, setTarget] = useState(1)
@@ -45,7 +44,7 @@ export function AddKeyResultForm({ onSuccess, onCancel, defaultProjectId, initia
     useEffect(() => {
         if (initialData) {
             setContent(initialData.content)
-            setEmoji(initialData.icon || "🍎")
+            setEmoji(initialData.icon || "todo")
             setColor(initialData.color || COLORS[0])
             setMode((initialData.requiredTouches || 1) > 1 ? 'count' : 'single')
             setTarget(initialData.requiredTouches || 1)
@@ -75,22 +74,29 @@ export function AddKeyResultForm({ onSuccess, onCancel, defaultProjectId, initia
                 }
             }
 
+            let result;
             if (initialData) {
-                await updateKeyResult({
+                result = await updateKeyResult({
                     keyResultId: initialData.keyResultId,
                     ...commonData
                 })
             } else {
-                await createKeyResult(commonData)
+                result = await createKeyResult(commonData)
             }
-            
-            if (!initialData) {
-                setContent("")
-                setTarget(1)
+
+            if (result.success) {
+                if (!initialData) {
+                    setContent("")
+                    setTarget(1)
+                }
+                onSuccess?.()
+            } else {
+                console.error("Operation failed:", result.error)
+                alert(`Failed to save: ${result.error}`)
             }
-            onSuccess?.()
         } catch (error) {
             console.error("Failed to save habit:", error)
+            alert("An unexpected error occurred")
         } finally {
             setIsLoading(false)
         }
@@ -121,7 +127,7 @@ export function AddKeyResultForm({ onSuccess, onCancel, defaultProjectId, initia
                         <Label className="text-base font-semibold">What you want to do</Label>
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-muted-foreground">Example</span>
-                            <span className="text-lg">🏈</span>
+                            <Icon icon="todo" className="w-6 h-6" />
                         </div>
                     </div>
 
@@ -129,19 +135,11 @@ export function AddKeyResultForm({ onSuccess, onCancel, defaultProjectId, initia
                         className="flex items-center gap-3 p-4 rounded-2xl transition-colors"
                         style={{ backgroundColor: color + "40" }} // 25% opacity
                     >
-                        <div className="relative group">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="h-12 w-12 rounded-xl bg-white/50 hover:bg-white/80 shrink-0"
-                                onClick={() => {
-                                    const current = EMOJIS.indexOf(emoji)
-                                    setEmoji(EMOJIS[(current + 1) % EMOJIS.length])
-                                }}
-                            >
-                                <span className="text-2xl">{emoji}</span>
-                            </Button>
+                        <div className="relative group w-12">
+                            <IconPicker
+                                value={emoji}
+                                onChange={setEmoji}
+                            />
                         </div>
                         <Input
                             autoFocus

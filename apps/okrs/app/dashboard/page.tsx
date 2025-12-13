@@ -32,7 +32,7 @@ export default async function DashboardPage() {
         </div>
         <div>
           <Text variant="regular" className="text-sm text-muted-foreground">Welcome back</Text>
-          <Text variant="h1" className="text-3xl font-bold">{user?.name || "User"}</Text>
+          <Text variant="regular" className="ml-2 font-bold">{user?.name || "User"}</Text>
         </div>
       </div>
 

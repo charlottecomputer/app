@@ -163,3 +163,4 @@ export { MobileDock, type MobileDockItem } from "./ui/mobile/mobile-dock"
 
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "./ui/accordion"
 
+export {IconPicker} from "./ui/icon-picker"

@@ -260,13 +260,15 @@ export async function updateKeyResult(input: UpdateKeyResultInput): Promise<KeyR
     }
 
     if (input.unit !== undefined) {
-      updateExpression += ", unit = :unit";
+      updateExpression += ", #unit = :unit";
       expressionAttributeValues[":unit"] = input.unit;
+      expressionAttributeNames["#unit"] = "unit";
     }
 
     if (input.color !== undefined) {
-      updateExpression += ", color = :color";
+      updateExpression += ", #color = :color";
       expressionAttributeValues[":color"] = input.color;
+      expressionAttributeNames["#color"] = "color";
     }
 
     if (input.frequency !== undefined) {
@@ -279,6 +281,7 @@ export async function updateKeyResult(input: UpdateKeyResultInput): Promise<KeyR
       Key: { userId, id: input.keyResultId },
       UpdateExpression: updateExpression,
       ExpressionAttributeValues: expressionAttributeValues,
+      ExpressionAttributeNames: Object.keys(expressionAttributeNames).length > 0 ? expressionAttributeNames : undefined,
     });
 
     await dynamoDb.send(command);
