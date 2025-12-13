@@ -25,7 +25,7 @@ const COLORS = [
 
 const EMOJIS = ["🍎", "💧", "📚", "🏃", "🧘", "💊", "💻", "🧹", "🏋️", "🎨", "🎸", "📝"]
 
-export function AddHabitForm({ onSuccess, onCancel }: { onSuccess?: () => void, onCancel?: () => void }) {
+export function AddHabitForm({ onSuccess, onCancel, defaultProjectId }: { onSuccess?: () => void, onCancel?: () => void, defaultProjectId?: string }) {
     const [content, setContent] = useState("")
     const [emoji, setEmoji] = useState("🍎")
     const [color, setColor] = useState(COLORS[0])
@@ -43,6 +43,7 @@ export function AddHabitForm({ onSuccess, onCancel }: { onSuccess?: () => void, 
         try {
             await createKeyResult({
                 content,
+                projectId: defaultProjectId,
                 requiredTouches: mode === 'single' ? 1 : target,
                 icon: emoji,
                 unit,

@@ -2,7 +2,7 @@
 
 import { PutCommand, QueryCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { GetUserCommand } from "@aws-sdk/client-cognito-identity-provider";
-import { dynamoDb, TABLE_NAME } from "@/lib/dynamo";
+import { dynamoDb, OBJECTIVES_TABLE } from "@/lib/dynamo";
 import { cognitoClient } from "@/lib/cognito";
 import { getSessionToken } from "./auth-actions";
 import { revalidatePath } from "next/cache";
@@ -35,7 +35,7 @@ export async function getObjectives(): Promise<{ objectives: Objective[]; error?
         const userId = await getCurrentUserId();
 
         const command = new QueryCommand({
-            TableName: TABLE_NAME,
+            TableName: OBJECTIVES_TABLE,
             KeyConditionExpression: "userId = :userId",
             ExpressionAttributeValues: {
                 ":userId": userId,
@@ -51,7 +51,7 @@ export async function getObjectives(): Promise<{ objectives: Objective[]; error?
             if (item.type === 'objective') {
                 objectives.push({
                     userId: String(item.userId),
-                    projectId: String(item.todoId), // stored as todoId
+                    projectId: String(item.id), // stored as id
                     name: String(item.name),
                     icon: item.icon,
                     color: item.color,
@@ -92,11 +92,11 @@ export async function createObjective(input: createObjectiveInput): Promise<KeyR
 
         const item = {
             ...objective,
-            todoId: projectId, // Store projectId in todoId field
+            id: projectId, // Store projectId in id field
         };
 
         const command = new PutCommand({
-            TableName: TABLE_NAME,
+            TableName: OBJECTIVES_TABLE,
             Item: item,
         });
 
@@ -142,8 +142,8 @@ export async function updateObjective(input: UpdateObjectiveInput): Promise<KeyR
         }
 
         const command = new UpdateCommand({
-            TableName: TABLE_NAME,
-            Key: { userId, todoId: input.projectId }, // projectId is stored in todoId field
+            TableName: OBJECTIVES_TABLE,
+            Key: { userId, id: input.projectId }, // projectId is stored in id field
             UpdateExpression: updateExpression,
             ExpressionAttributeValues: expressionAttributeValues,
             ExpressionAttributeNames: Object.keys(expressionAttributeNames).length > 0 ? expressionAttributeNames : undefined,
@@ -172,8 +172,8 @@ export async function deleteObjective(projectId: string): Promise<KeyResultsActi
         const userId = await getCurrentUserId();
 
         const command = new DeleteCommand({
-            TableName: TABLE_NAME,
-            Key: { userId, todoId: projectId },
+            TableName: OBJECTIVES_TABLE,
+            Key: { userId, id: projectId },
         });
 
         await dynamoDb.send(command);

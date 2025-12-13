@@ -8,18 +8,9 @@ import type { KeyResult, Objective } from "@/types/key-results"
 import { KeyResultSquare } from "@/components/key-result-square"
 import { Plus } from "lucide-react"
 
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-  DrawerDescription
-} from "@aliveui"
-import { AddHabitForm } from "@/components/add-habit-form"
+import { AddKeyResultDrawer } from "@/components/add-key-result-drawer"
 
 export default function InboxPage() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [inboxKeyResults, setInboxKeyResults] = useState<KeyResult[]>([])
   const [objectives, setObjectives] = useState<Objective[]>([])
 
@@ -53,30 +44,7 @@ export default function InboxPage() {
             </Text>
           </div>
 
-          <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-            <DrawerTrigger>
-              <Button size="sm" icon={<Plus className="h-4 w-4" />}>
-                Add Key Result
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent>
-              <div className="mx-auto w-full max-w-sm h-[85vh] flex flex-col">
-                <DrawerHeader>
-                  <DrawerTitle>Add New Key Result</DrawerTitle>
-                  <DrawerDescription>Create a new key result or habit.</DrawerDescription>
-                </DrawerHeader>
-                <div className="flex-1 overflow-y-auto p-4 pb-8">
-                  <AddHabitForm
-                    onCancel={() => setIsDrawerOpen(false)}
-                    onSuccess={() => {
-                      setIsDrawerOpen(false)
-                      loadData()
-                    }}
-                  />
-                </div>
-              </div>
-            </DrawerContent>
-          </Drawer>
+          <AddKeyResultDrawer onSuccess={loadData} />
         </div>
 
         {inboxKeyResults.length === 0 ? (

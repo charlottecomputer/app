@@ -44,8 +44,8 @@ export function AppShell({ children, user, navMain, sidebar, collapsible = "offc
   const scrollRef = React.useRef<HTMLElement>(null)
 
   return (
-    <SidebarProvider defaultOpen={false}>
-      <div className="flex flex-col h-svh w-svw bg-sidebar ">
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex flex-col !max-h-svh h-svh overflow-clip !w-svw bg-sidebar ">
         {header ? header : <SiteHeader user={user} navMain={navMain} appName={appName} dailyProgress={dailyProgress} />}
         {dailyProgress && (
           <div className="border-b bg-sidebar-accent/50">
@@ -54,7 +54,7 @@ export function AppShell({ children, user, navMain, sidebar, collapsible = "offc
         )}
         <div className="flex flex-1 bg-sidebar overflow-hidden">
           {sidebar ? sidebar : <AppSidebar navMain={navMain} user={user} collapsible={collapsible} />}
-          <SidebarInset className="flex flex-col bg-sidebar flex-1 overflow-hidden  p-[1px] relative">
+          <SidebarInset className="flex flex-col bg-sidebar flex-1 overflow-hidden  px-[1px] relative">
 
             {backgroundAnimated ? (
               <>

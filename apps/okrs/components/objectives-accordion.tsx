@@ -9,6 +9,8 @@ import {
 } from "@aliveui"
 import { Objective, KeyResult } from "@/types/key-results"
 import { KeyResultSquare } from "./key-result-square"
+import { AddKeyResultDrawer } from "./add-key-result-drawer"
+import { Plus } from "lucide-react"
 
 interface ObjectivesAccordionProps {
     objectives: Objective[]
@@ -67,6 +69,17 @@ export function ObjectivesAccordion({ objectives, keyResultsByObjective }: Objec
                                             objectives={objectives}
                                         />
                                     ))}
+                                    <AddKeyResultDrawer
+                                        projectId={objective.projectId}
+                                        trigger={
+                                            <button className="w-32 h-32 rounded-2xl border-2 border-dashed border-muted-foreground/20 hover:border-muted-foreground/40 hover:bg-muted/50 flex flex-col items-center justify-center gap-2 transition-all group">
+                                                <div className="w-8 h-8 rounded-full bg-muted group-hover:bg-background flex items-center justify-center transition-colors">
+                                                    <Plus className="w-4 h-4 text-muted-foreground" />
+                                                </div>
+                                                <span className="text-xs font-medium text-muted-foreground">Add Key Result</span>
+                                            </button>
+                                        }
+                                    />
                                 </div>
                                 {projectKeyResults.length === 0 && (
                                     <div className="text-center py-4 text-muted-foreground text-sm">

@@ -49,7 +49,7 @@ export interface KeyResult {
 
 export interface Objective {
   userId: string;
-  projectId: string; // stored as todoId in DynamoDB with prefix or just ID
+  projectId: string; // stored as id in DynamoDB
   name: string;
   icon?: string;
   color?: string;

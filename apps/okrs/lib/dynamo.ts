@@ -10,5 +10,7 @@ const client = new DynamoDBClient({
 });
 
 export const dynamoDb = DynamoDBDocumentClient.from(client);
-export const TABLE_NAME = "key-results";
+export const TABLE_NAME = "todos"; // Legacy
+export const KEY_RESULTS_TABLE = "key-results";
+export const OBJECTIVES_TABLE = "objectives";
 export const USERS_TABLE_NAME = "users";

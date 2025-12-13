@@ -2,7 +2,7 @@
 
 import { PutCommand, QueryCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { GetUserCommand } from "@aws-sdk/client-cognito-identity-provider";
-import { dynamoDb, TABLE_NAME } from "@/lib/dynamo";
+import { dynamoDb, KEY_RESULTS_TABLE } from "@/lib/dynamo";
 import { cognitoClient } from "@/lib/cognito";
 import { getSessionToken } from "./auth-actions";
 import { revalidatePath } from "next/cache";
@@ -33,7 +33,7 @@ export async function getKeyResults(): Promise<KeyResultsResponse> {
     const userId = await getCurrentUserId();
 
     const command = new QueryCommand({
-      TableName: TABLE_NAME,
+      TableName: KEY_RESULTS_TABLE,
       KeyConditionExpression: "userId = :userId",
       ExpressionAttributeValues: {
         ":userId": userId,
@@ -51,7 +51,7 @@ export async function getKeyResults(): Promise<KeyResultsResponse> {
         // We map legacy fields to new fields if necessary
         keyResults.push({
           userId: String(item.userId),
-          keyResultId: String(item.todoId),
+          keyResultId: String(item.id),
           content: String(item.content),
           completed: Boolean(item.completed),
           createdAt: String(item.createdAt),
@@ -149,7 +149,7 @@ export async function createKeyResult(input: CreateKeyResultInput): Promise<KeyR
 
     const keyResult: any = {
       userId,
-      todoId: keyResultId, // Store keyResultId in todoId field
+      id: keyResultId, // Store keyResultId in id field
       content: input.content.trim(),
       completed: false,
       createdAt,
@@ -172,7 +172,7 @@ export async function createKeyResult(input: CreateKeyResultInput): Promise<KeyR
     };
 
     await dynamoDb.send(new PutCommand({
-      TableName: TABLE_NAME,
+      TableName: KEY_RESULTS_TABLE,
       Item: keyResult,
     }));
 
@@ -275,8 +275,8 @@ export async function updateKeyResult(input: UpdateKeyResultInput): Promise<KeyR
     }
 
     const command = new UpdateCommand({
-      TableName: TABLE_NAME,
-      Key: { userId, todoId: input.keyResultId },
+      TableName: KEY_RESULTS_TABLE,
+      Key: { userId, id: input.keyResultId },
       UpdateExpression: updateExpression,
       ExpressionAttributeValues: expressionAttributeValues,
     });
@@ -304,8 +304,8 @@ export async function deleteKeyResult(keyResultId: string): Promise<KeyResultsAc
     const userId = await getCurrentUserId();
 
     const command = new DeleteCommand({
-      TableName: TABLE_NAME,
-      Key: { userId, todoId: keyResultId },
+      TableName: KEY_RESULTS_TABLE,
+      Key: { userId, id: keyResultId },
     });
 
     await dynamoDb.send(command);
