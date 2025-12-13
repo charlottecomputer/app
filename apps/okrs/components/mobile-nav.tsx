@@ -3,7 +3,7 @@
 import { MobileDock, type MobileDockItem, Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@aliveui"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
-import { AddHabitForm } from "./add-habit-form"
+import { AddKeyResultDrawer } from "./add-key-result-drawer"
 
 export function MobileNav({ user }: { user?: any }) {
     const pathname = usePathname()
@@ -59,7 +59,7 @@ export function MobileNav({ user }: { user?: any }) {
                         <DrawerTitle>New Key Result</DrawerTitle>
                     </DrawerHeader>
                     <div className="p-4 pb-8 h-[80vh]">
-                        <AddHabitForm onSuccess={() => setOpen(false)} />
+                        <AddKeyResultDrawer onSuccess={() => setOpen(false)} />
                     </div>
                 </DrawerContent>
             </Drawer>

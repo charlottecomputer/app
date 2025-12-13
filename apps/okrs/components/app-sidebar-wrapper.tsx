@@ -54,9 +54,16 @@ export const sidebarData: {
     avatar: "",
   },
   navMain: [
+      {
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: "calendar",
+      isActive: true,
+      items: [],
+    },
     {
       title: "Today",
-      url: "/dashboard",
+      url: "/dashboard/today",
       icon: "calendar",
       isActive: true,
       items: [],
@@ -69,13 +76,13 @@ export const sidebarData: {
     },
     {
       title: "Inbox",
-      url: "/inbox",
+      url: "/dashboard/inbox",
       icon: "inbox",
       items: [],
     },
     {
       title: "Upcoming",
-      url: "/upcoming",
+      url: "/dashboard/upcoming",
       icon: "calendar",
       items: [],
     },

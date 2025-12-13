@@ -11,7 +11,7 @@ import {
   DrawerTrigger,
   DrawerDescription
 } from "@aliveui"
-import { AddHabitForm } from "@/components/add-habit-form"
+import { AddKeyResultForm } from "@/components/add-key-result-form"
 
 interface AddKeyResultDrawerProps {
   onSuccess?: () => void
@@ -39,7 +39,7 @@ export function AddKeyResultDrawer({ onSuccess, trigger, projectId }: AddKeyResu
             <DrawerDescription>Create a new key result or habit.</DrawerDescription>
           </DrawerHeader>
           <div className="flex-1 overflow-y-auto p-4 pb-8">
-            <AddHabitForm
+            <AddKeyResultForm
               defaultProjectId={projectId}
               onCancel={() => setIsDrawerOpen(false)}
               onSuccess={() => {

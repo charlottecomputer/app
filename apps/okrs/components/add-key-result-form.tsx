@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { createKeyResult } from "@/actions/key-results-actions"
 import { Button, Input, Label, cn } from "@aliveui"
 import { Plus, Check, X } from "lucide-react"
@@ -25,7 +25,14 @@ const COLORS = [
 
 const EMOJIS = ["🍎", "💧", "📚", "🏃", "🧘", "💊", "💻", "🧹", "🏋️", "🎨", "🎸", "📝"]
 
-export function AddHabitForm({ onSuccess, onCancel, defaultProjectId }: { onSuccess?: () => void, onCancel?: () => void, defaultProjectId?: string }) {
+interface AddKeyResultFormProps {
+    onSuccess?: () => void
+    onCancel?: () => void
+    defaultProjectId?: string
+    initialData?: KeyResult
+}
+
+export function AddKeyResultForm({ onSuccess, onCancel, defaultProjectId, initialData }: AddKeyResultFormProps) {
     const [content, setContent] = useState("")
     const [emoji, setEmoji] = useState("🍎")
     const [color, setColor] = useState(COLORS[0])
@@ -35,13 +42,25 @@ export function AddHabitForm({ onSuccess, onCancel, defaultProjectId }: { onSucc
     const [frequency, setFrequency] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]) // Default to all days
     const [isLoading, setIsLoading] = useState(false)
 
+    useEffect(() => {
+        if (initialData) {
+            setContent(initialData.content)
+            setEmoji(initialData.icon || "🍎")
+            setColor(initialData.color || COLORS[0])
+            setMode((initialData.requiredTouches || 1) > 1 ? 'count' : 'single')
+            setTarget(initialData.requiredTouches || 1)
+            setUnit(initialData.unit || "times")
+            setFrequency(initialData.frequency || [0, 1, 2, 3, 4, 5, 6])
+        }
+    }, [initialData])
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!content.trim()) return
 
         setIsLoading(true)
         try {
-            await createKeyResult({
+            const commonData = {
                 content,
                 projectId: defaultProjectId,
                 requiredTouches: mode === 'single' ? 1 : target,
@@ -50,16 +69,28 @@ export function AddHabitForm({ onSuccess, onCancel, defaultProjectId }: { onSucc
                 color,
                 frequency,
                 recurrence: {
-                    type: 'weekly',
+                    type: 'weekly' as const,
                     days: frequency,
-                    basis: 'scheduled'
+                    basis: 'scheduled' as const
                 }
-            })
-            setContent("")
-            setTarget(1)
+            }
+
+            if (initialData) {
+                await updateKeyResult({
+                    keyResultId: initialData.keyResultId,
+                    ...commonData
+                })
+            } else {
+                await createKeyResult(commonData)
+            }
+            
+            if (!initialData) {
+                setContent("")
+                setTarget(1)
+            }
             onSuccess?.()
         } catch (error) {
-            console.error("Failed to create habit:", error)
+            console.error("Failed to save habit:", error)
         } finally {
             setIsLoading(false)
         }
@@ -248,7 +279,7 @@ export function AddHabitForm({ onSuccess, onCancel, defaultProjectId }: { onSucc
 
             <div className="pt-4 flex gap-2 mt-auto">
                 <Button type="submit" className="flex-1 h-12 text-lg font-medium" disabled={isLoading || !content.trim()}>
-                    {isLoading ? "Creating..." : "Create Habit"}
+                    {isLoading ? (initialData ? "Saving..." : "Creating...") : (initialData ? "Save Changes" : "Create Habit")}
                 </Button>
             </div>
         </form>

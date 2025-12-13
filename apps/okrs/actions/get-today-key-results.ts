@@ -6,7 +6,7 @@ import type { KeyResult } from "@/types/key-results";
 /**
  * Get today's todos (limited to first 3 for preview cards)
  */
-export async function getTodayKeyResults(limit: number = 3): Promise<KeyResult[]> {
+export async function getTodayKeyResults(limit?: number): Promise<KeyResult[]> {
   try {
     const { keyResults, error } = await getKeyResults();
 
@@ -15,13 +15,37 @@ export async function getTodayKeyResults(limit: number = 3): Promise<KeyResult[]
       return [];
     }
 
-    // For now, return all todos since we don't have date filtering
-    // In the future, filter by today's date based on createdAt or a dueDate field
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const dayIndex = today.getDay(); // 0 = Sunday, 1 = Monday, ...
+    const dateString = today.toISOString().split('T')[0]; // YYYY-MM-DD
 
-    return keyResults
-      .slice(0, limit); // Limit to specified number
+    const todaysKeyResults = keyResults.filter(kr => {
+      // 1. Check specific due date
+      if (kr.dueDate && kr.dueDate.startsWith(dateString)) return true;
+
+      // 2. Check recurrence
+      if (kr.recurrence) {
+        if (kr.recurrence.type === 'daily') return true;
+        
+        if (kr.recurrence.type === 'weekdays') {
+          return dayIndex >= 1 && dayIndex <= 5;
+        }
+
+        if (kr.recurrence.type === 'weekly' && kr.frequency) {
+          return kr.frequency.includes(dayIndex);
+        }
+      }
+
+      // Default: if no recurrence/date, maybe don't show in "Today" unless it was created today?
+      // For now, let's assume "Today" view is strictly for scheduled items.
+      return false;
+    });
+
+    if (limit) {
+      return todaysKeyResults.slice(0, limit);
+    }
+
+    return todaysKeyResults;
   } catch (error) {
     console.error("Failed to get today's keyResults:", error);
     return [];

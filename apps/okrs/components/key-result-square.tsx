@@ -11,9 +11,14 @@ import {
     ContextMenuContent,
     ContextMenuItem,
     ContextMenuTrigger,
+    Badge,
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem
 } from "@aliveui"
-import { Pencil, Trash, Flag, Repeat } from "lucide-react"
-import { EditKeyResultDialog } from "./edit-key-result-dialog"
+import { Pencil, Trash, Flag, Repeat, MoreHorizontal } from "lucide-react"
+import { EditKeyResultDrawer } from "./edit-key-result-drawer"
 
 interface KeyResultSquareProps extends KeyResult {
     objectives?: Objective[]
@@ -99,7 +104,7 @@ export function KeyResultSquare({ objectives = [], onClick, ...keyResult }: KeyR
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         className={cn(
-                            "relative flex flex-col p-4 rounded-3xl bg-card border shadow-sm hover:shadow-md transition-all overflow-hidden cursor-pointer select-none",
+                            "relative flex flex-col p-4 rounded-3xl bg-card border shadow-sm hover:shadow-md transition-all overflow-hidden cursor-pointer select-none group",
                             "w-full sm:w-[200px] h-[200px] space-y-3 justify-between", // Fixed size for square look
                             isCompleted && "opacity-70"
                         )}
@@ -134,10 +139,41 @@ export function KeyResultSquare({ objectives = [], onClick, ...keyResult }: KeyR
                         {/* Header */}
                         <div className="relative z-10 flex items-start justify-between gap-2">
                             <div className="text-3xl">{keyResult.icon || "📝"}</div>
-                            <div className="flex gap-1">
+                            <div className="flex gap-1 items-center">
                                 {keyResult.priority && (
                                     <Flag className={`w-4 h-4 ${getPriorityColor(keyResult.priority)}`} />
                                 )}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-muted rounded-full outline-none focus:opacity-100"
+                                        >
+                                            <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onClick={(e) => {
+                                            e.stopPropagation()
+                                            setIsEditing(true)
+                                        }}>
+                                            <Pencil className="mr-2 h-4 w-4" />
+                                            Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            className="text-destructive focus:text-destructive"
+                                            onClick={async (e) => {
+                                                e.stopPropagation()
+                                                if (confirm("Are you sure you want to delete this keyResult?")) {
+                                                    await deleteKeyResult(keyResult.keyResultId)
+                                                }
+                                            }}
+                                        >
+                                            <Trash className="mr-2 h-4 w-4" />
+                                            Delete
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
                         </div>
 
@@ -147,9 +183,16 @@ export function KeyResultSquare({ objectives = [], onClick, ...keyResult }: KeyR
                                 {keyResult.content}
                             </h3>
                             {keyResult.recurrence && (
-                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                    <Repeat className="w-3 h-3" />
-                                    <span>{keyResult.recurrence.type}</span>
+                                <div className="flex items-center gap-1">
+                                    <Badge variant="secondary" className="text-[10px] px-1.5 h-5 font-normal">
+                                        {keyResult.recurrence.type === 'weekly' && keyResult.frequency
+                                            ? keyResult.frequency.length === 7
+                                                ? 'Daily'
+                                                : keyResult.frequency.length === 5 && !keyResult.frequency.includes(0) && !keyResult.frequency.includes(6)
+                                                    ? 'Weekdays'
+                                                    : `${keyResult.frequency.length} days/wk`
+                                            : keyResult.recurrence.type}
+                                    </Badge>
                                 </div>
                             )}
                         </div>
@@ -157,7 +200,7 @@ export function KeyResultSquare({ objectives = [], onClick, ...keyResult }: KeyR
                         {/* Footer / Progress */}
                         <div className="relative z-10 flex items-center justify-between text-xs text-muted-foreground font-mono">
                             <span>{currentTouches} / {requiredTouches}</span>
-                            <span>{Math.round(progress)}%</span>
+                            {requiredTouches > 1 && <span>{Math.round(progress)}%</span>}
                         </div>
 
                     </motion.div>
@@ -181,9 +224,8 @@ export function KeyResultSquare({ objectives = [], onClick, ...keyResult }: KeyR
                 </ContextMenuContent>
             </ContextMenu>
 
-            <EditKeyResultDialog
+            <EditKeyResultDrawer
                 keyResult={keyResult}
-                objectives={objectives}
                 open={isEditing}
                 onOpenChange={setIsEditing}
             />

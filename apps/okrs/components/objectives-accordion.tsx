@@ -5,7 +5,8 @@ import {
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-    Text
+    Text,
+    Badge
 } from "@aliveui"
 import { Objective, KeyResult } from "@/types/key-results"
 import { KeyResultSquare } from "./key-result-square"
@@ -43,14 +44,23 @@ export function ObjectivesAccordion({ objectives, keyResultsByObjective }: Objec
                                 </div>
                                 <div className="flex flex-col gap-2 min-w-0">
                                     <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
-                                        <Text variant="bold" size="lg" className="truncate">
-                                            {objective.name}
-                                        </Text>
-                                        <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">
-                                            {completedKeyResults}/{totalKeyResults} done
-                                        </span>
+                                        <div className="flex flex-col gap-1">
+                                            <div className="flex items-center gap-2">
+                                                <Text variant="bold" size="lg" className="truncate">
+                                                    {objective.name}
+                                                </Text>
+                                                <Badge variant="outline" className="text-[10px] px-1.5 h-5 font-normal bg-background/50">
+                                                    Q1 2024
+                                                </Badge>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                <span>{new Date(objective.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} - Mar 31</span>
+                                                <span>•</span>
+                                                <span>{completedKeyResults}/{totalKeyResults} done</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden mt-1">
                                         <div
                                             className="h-full bg-primary transition-all duration-500 ease-out rounded-full"
                                             style={{ width: `${progress}%`, backgroundColor: objective.color }}
